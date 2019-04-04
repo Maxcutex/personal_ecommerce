@@ -1,0 +1,43 @@
+*.py[cod]
+venv/
+htmlcov/
+.env
+__pycache__
+*.pytest_cache/
+.DS_Store
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# pycharm
+.idea
+.idea/
+/.idea
+
+.cache/
+.vscode/
+.pytest_cache
