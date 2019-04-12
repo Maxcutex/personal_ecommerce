@@ -58,6 +58,13 @@ class BaseRepo:
 	def filter(self, *args):
 		"""Query and filter the data of the model."""
 		return self._model.query.filter(*args)
+
+	def exists(self, **kwargs):
+
+		if self._model.query.filter_by(**kwargs).first():
+			return True
+
+		return False
 	
 	def pagination_meta(self, paginator):
 		return {'totalRows': paginator.total, 'totalPages': paginator.pages, 'currentPage': paginator.page,
