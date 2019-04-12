@@ -2,7 +2,7 @@ from app.utils import db
 from sqlalchemy import exc
 from datetime import datetime
 from sqlalchemy.inspection import inspect
-from app.repositories.base_repo import BaseRepo
+
 from app.utils import to_camel_case, format_response_timestamp
 
 
