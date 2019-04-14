@@ -11,5 +11,6 @@ class Category(BaseModel):
     department_id = db.Column(db.Integer(), db.ForeignKey('departments.id'), default=1)
     department = db.relationship('Department', lazy=False)
 
+
     def __str__(self):
         return self.name

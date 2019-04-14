@@ -1,4 +1,4 @@
-
+from sqlalchemy import desc, asc
 class BaseRepo:
 	
 	def __init__(self, _model):
@@ -38,6 +38,16 @@ class BaseRepo:
 	def filter_by(self, **kwargs):
 		"""Query and filter the data of the model."""
 		return self._model.query.filter_by(**kwargs).paginate(error_out=False)
+
+	def filter_by_desc(self, *args, **kwargs):
+		"""Query and filter the data of the model in descending order"""
+		return self._model.query.filter_by(**kwargs).order_by(desc(*args)) \
+			.paginate(error_out=False)
+
+	def filter_by_asc(self, *args, **kwargs):
+		"""Query and filter the data of the model in ascending order"""
+		return self._model.query.filter_by(**kwargs).order_by(asc(*args)) \
+			.paginate(error_out=False)
 	
 	def find_first(self, **kwargs):
 		"""Query and filter the data of a model, returning the first result."""
@@ -58,6 +68,20 @@ class BaseRepo:
 	def filter(self, *args):
 		"""Query and filter the data of the model."""
 		return self._model.query.filter(*args)
+
+	def get_unpaginated(self, **kwargs):
+		"""Query and filter the data of the model."""
+		return self._model.query.filter_by(**kwargs).all()
+
+	def get_unpaginated_asc(self, *args, **kwargs):
+		"""Query and filter the data of the model in ascending order."""
+		return self._model.query.filter_by(**kwargs).order_by(asc(*args)) \
+			.all()
+
+	def get_unpaginated_desc(self, *args, **kwargs):
+		"""Query and filter the data of the model in ascending order."""
+		return self._model.query.filter_by(**kwargs).order_by(desc(*args)) \
+			.all()
 
 	def exists(self, **kwargs):
 

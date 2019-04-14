@@ -9,7 +9,7 @@ from flask import current_app
 from flask_testing import TestCase
 from faker import Faker
 
-config_name = 'testing'
+config_name = 'development'
 environ['APP_ENV'] = config_name
 fake = Faker()
 
