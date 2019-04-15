@@ -17,7 +17,6 @@ class AttributeController(BaseController):
 			self.attribute_repo._model.name,
 			is_deleted=False
 		)
-		pdb.set_trace()
 		attributes_list = [attribute.serialize() for attribute in attributes]
 		return self.handle_response('OK', payload={'attributes': attributes_list})
 

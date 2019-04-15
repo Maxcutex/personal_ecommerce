@@ -1,11 +1,9 @@
 '''
 Unit tests for the User Controller.
 '''
-import pdb
 from datetime import datetime
 from unittest.mock import patch
 
-from app import db
 from app.controllers.user_controller import UserController
 from app.models.user_role import UserRole
 from tests.base_test_case import BaseTestCase
@@ -103,7 +101,6 @@ class TestUserController(BaseTestCase):
             user_controller = UserController(self.request_context)
 
             response = user_controller.list_user(email="testemail@email.com")
-            pdb.set_trace()
 
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.get_json()['msg'], "OK")

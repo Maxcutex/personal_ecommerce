@@ -13,7 +13,7 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     first_name = 'Test'
     last_name = 'Surname'
     email = factory.Faker('email')
-    department_id = factory.SubFactory(DepartmentFactory)
+    department = factory.SubFactory(DepartmentFactory)
     address_1 = factory.Faker('address')
     address_2 = factory.Faker('address')
     city = factory.Faker('city')
@@ -25,5 +25,7 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     eve_phone = '555-10101021'
     mob_phone = '555-10101031'
     password_hash = factory.Faker('password')
-    is_admin = db.Column(db.Boolean, default=False)
+
+    department_id = factory.SelfAttribute('department.id')
+
 

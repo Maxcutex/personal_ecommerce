@@ -25,6 +25,8 @@ class User(BaseModel):
 	department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
 	is_admin = db.Column(db.Boolean, default=False)
 
+	department = db.relationship('Department', lazy=False)
+
 	def password_is_valid(self, password):
 		"""
 		Checks the password against it's hash to validates the user's password
