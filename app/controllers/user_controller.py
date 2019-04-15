@@ -13,7 +13,6 @@ class UserController(BaseController):
     def __init__(self, request):
         '''
         Constructor.
-
         Parameters:
         -----------
             request
@@ -27,12 +26,10 @@ class UserController(BaseController):
     def list_admin_users(self, admin_role_id: int = 1) -> list:
         '''
         List admin users.
-
         Parameters:
         -----------
         admin_role_id {int}
             Admin role ID (default: {1}).
-
         Returns:
         --------
         list
@@ -96,19 +93,18 @@ class UserController(BaseController):
         user_info = self.request_params('email', 'firstName', 'lastName', 'password', 'is_admin')
 
         email, first_name, last_name, password, is_admin = user_info
-        pdb.set_trace()
         if self.user_repo.find_first(email=email) is not None:
             return self.handle_response(
                 f"User with email '{email}' already exists",
                 status_code=400
             )
-        # pdb.set_trace()
+
         user = self.user_repo.new_user(*user_info)
 
         return self.handle_response('OK', payload={'user': user.serialize()}, status_code=201)
 
     def list_user(self, email):
-        pdb.set_trace()
+
         user = self.user_repo.find_first(email=email)
         if user:
             return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)

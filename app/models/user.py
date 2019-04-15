@@ -1,4 +1,4 @@
-"""module of attribute model class"""
+"""module of User model class"""
 from .base_model import BaseModel, db
 from flask_bcrypt import Bcrypt
 import jwt
@@ -24,6 +24,8 @@ class User(BaseModel):
 	password_hash = db.Column(db.String(128))
 	department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
 	is_admin = db.Column(db.Boolean, default=False)
+
+	department = db.relationship('Department', lazy=False)
 
 	def password_is_valid(self, password):
 		"""

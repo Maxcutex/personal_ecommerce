@@ -93,12 +93,10 @@ class TestUserController(BaseTestCase):
                 "User with email '{}' already exists".format(user.email)
             )
 
-    @patch.object(UserController, 'request_params')
-    def test_list_user_succeeds(self, mock_request_params):
+    def test_list_user_succeeds(self):
 
         with self.app.app_context():
-            user = UserFactory(email="testemail@email.com", password="Complexx@34")
-
+            user = UserFactory.create(email="testemail@email.com", password="Complexx@34")
 
             user_controller = UserController(self.request_context)
 
