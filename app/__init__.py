@@ -5,6 +5,7 @@ from app.utils import db #, timedelta
 from app.blueprints.base_blueprint import BaseBlueprint
 from app.utils.auth import Auth
 
+
 def create_app(config_name):
 	app = FlaskAPI(__name__, instance_relative_config=False)
 	app.config.from_object(env.app_env[config_name])

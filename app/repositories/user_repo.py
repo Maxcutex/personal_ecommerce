@@ -20,7 +20,6 @@ class UserRepo(BaseRepo):
         first_name, last_name, email, password, is_admin = args
 
         user = User(first_name=first_name, last_name=last_name,
-                    is_admin=is_admin, email=email)
-        user.password_hash = User.password_hash(password)
+                    is_admin=is_admin, email=email, password=password)
         user.save()
         return user

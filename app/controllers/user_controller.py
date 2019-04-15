@@ -1,3 +1,5 @@
+import pdb
+
 from app.controllers.base_controller import BaseController
 from app.repositories import UserRoleRepo, RoleRepo, UserRepo
 from app.models import Role, User
@@ -45,18 +47,13 @@ class UserController(BaseController):
         admin_users_list = []
         for user_role in user_roles:
             admin_user_profile = {}
-            andela_user_profile = self.andela_service.get_user_by_email_or_id(
-                user_role.user_id
-            )
-            associated_roles = [user_role.role_id for user_role in self.user_role_repo.filter_by(user_id=user_role.user_id).items]
-            role_objects = Role.query.filter(Role.id.in_(associated_roles)).all()
-            roles = [{'id': role.id, 'name': role.name} for role in role_objects]
-            admin_user_profile['Email'] = andela_user_profile['email']
-            admin_user_profile['Name'] = andela_user_profile['name']
-            admin_user_profile['Id'] = andela_user_profile['id']
-            admin_user_profile['Roles'] = roles
 
-            admin_users_list.append(admin_user_profile)
+            associated_roles = [user_role.role_id for user_role in
+                                self.user_role_repo.filter_by(user_id=user_role.user_id).items]
+            user_objects = User.query.filter(User.id.in_(associated_roles)).all()
+            users = [{'id': user.id, 'first_name': user.first_name} for user in user_objects]
+
+            admin_users_list.append(users)
 
         return self.handle_response(
             'OK',
@@ -99,24 +96,22 @@ class UserController(BaseController):
         user_info = self.request_params('email', 'firstName', 'lastName', 'password', 'is_admin')
 
         email, first_name, last_name, password, is_admin = user_info
-
-        if self.user_repo.exists(email=email):
+        pdb.set_trace()
+        if self.user_repo.find_first(email=email) is not None:
             return self.handle_response(
-                f"User with email '{slack_id}' already exists",
+                f"User with email '{email}' already exists",
                 status_code=400
             )
-
+        # pdb.set_trace()
         user = self.user_repo.new_user(*user_info)
 
         return self.handle_response('OK', payload={'user': user.serialize()}, status_code=201)
 
     def list_user(self, email):
-
+        pdb.set_trace()
         user = self.user_repo.find_first(email=email)
-
         if user:
             return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)
-
         return self.handle_response('User not found', status_code=404)
 
     def update_user(self, email):
@@ -135,7 +130,6 @@ class UserController(BaseController):
             )
 
         user_info = self.request_params_dict('email', 'firstName', 'lastName', 'id')
-
 
         user = self.user_repo.update(user, **user_info)
 

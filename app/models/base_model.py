@@ -26,7 +26,7 @@ class BaseModel(db.Model):
 		db.session.commit()
 	
 	def serialize(self):
-		s = {to_camel_case(column.name): getattr(self, column.name) for column in self.__table__.columns if column.name not in ['created_at', 'updated_at']}
+		s = {to_camel_case(column.name): getattr(self, column.name) for column in self.__table__.columns if column.name not in ['created_at', 'updated_at', 'password_hash']}
 		s['timestamps'] = {'createdAt': format_response_timestamp(self.created_at), 'updatedAt': format_response_timestamp(self.updated_at)}
 		return s
 
