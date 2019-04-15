@@ -301,6 +301,10 @@ class TestAttributeController(BaseTestCase):
             assert result.get_json()['msg'] == 'Invalid or incorrect attribute_id' \
                 ' provided'
 
+    @patch.object(ProductAttributeRepo, 'get')
+    def test_get_attributes_of_a_product_by_id(self):
+        pass
+
     @patch.object(AttributeRepo, 'get')
     def test_delete_attribute_when_attribute_is_already_deleted(
         self,
