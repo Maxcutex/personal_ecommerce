@@ -1,5 +1,5 @@
 from app.repositories.base_repo import BaseRepo
-from app.models.atrribute import Attribute
+from app.models.attribute import Attribute
 
 
 class AttributeRepo(BaseRepo):

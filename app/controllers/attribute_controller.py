@@ -1,3 +1,5 @@
+import pdb
+
 from app import Auth
 from app.controllers.base_controller import BaseController
 from app.repositories.attribute_repo import AttributeRepo
@@ -15,14 +17,15 @@ class AttributeController(BaseController):
 			self.attribute_repo._model.name,
 			is_deleted=False
 		)
+		pdb.set_trace()
 		attributes_list = [attribute.serialize() for attribute in attributes]
-		return self.handle_response('OK', payload={'Attributes': attributes_list})
+		return self.handle_response('OK', payload={'attributes': attributes_list})
 
 	def list_attributes_page(self, page_id, attributes_per_page):
 		
 		attributes = self.attribute_repo.filter_by(page=page_id, per_page=attributes_per_page)
 		attributes_list = [attribute.serialize() for attribute in attributes.items]
-		return self.handle_response('OK', payload={'Attributes': attributes_list, 'meta': self.pagination_meta(attributes)})
+		return self.handle_response('OK', payload={'attributes': attributes_list, 'meta': self.pagination_meta(attributes)})
 
 	def get_attribute(self, attribute_id):
 		attribute = self.attribute_repo.get(attribute_id)
@@ -30,7 +33,7 @@ class AttributeController(BaseController):
 			if attribute.is_deleted:
 				return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
 			attribute = attribute.serialize()
-			return self.handle_response('OK', payload={'Attribute': attribute})
+			return self.handle_response('OK', payload={'attribute': attribute})
 		else:
 			return self.handle_response('Bad Request. This attribute id does not exist', status_code=400)
 
@@ -44,7 +47,7 @@ class AttributeController(BaseController):
 			return self.handle_response('attribute item with this name already exists', status_code=400)
 		new_attribute = self.attribute_repo.new_attribute(name).serialize()
 
-		return self.handle_response('OK', payload={'Attribute': new_attribute}, status_code=201)
+		return self.handle_response('OK', payload={'attribute': new_attribute}, status_code=201)
 
 	def update_attribute(self, attribute_id):
 		name = self.request_params('attributeName')
@@ -61,7 +64,7 @@ class AttributeController(BaseController):
 				updates['name'] = name
 
 			self.attribute_repo.update(attribute, **updates)
-			return self.handle_response('OK', payload={'Attribute': attribute.serialize()})
+			return self.handle_response('OK', payload={'attribute': attribute.serialize()})
 
 		return self.handle_response('Invalid or incorrect attribute_id provided', status_code=400)
 
