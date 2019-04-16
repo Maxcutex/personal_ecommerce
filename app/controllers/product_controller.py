@@ -1,6 +1,7 @@
 '''A controller module for product-related
 '''
 from app.controllers.base_controller import BaseController
+from app.repositories.product_attribute_repo import ProductAttributeRepo
 from app.repositories.product_repo import ProductRepo
 from app.repositories.product_rating_repo import ProductRatingRepo
 from app.utils.auth import Auth
@@ -11,6 +12,7 @@ class ProductController(BaseController):
 		BaseController.__init__(self, request)
 		self.product_repo = ProductRepo()
 		self.product_rating_repo = ProductRatingRepo()
+		self.product_attributes_repo = ProductAttributeRepo()
 
 	def list_products(self):
 		products = self.product_repo.filter_by_asc(
@@ -39,18 +41,28 @@ class ProductController(BaseController):
 			return self.handle_response('Bad Request - Invalid or Missing product_id', status_code=400)
 
 	def create_product(self):
-		name,  description, price, discounted_price, image, image2, thumbnail, display, sold, category_id = self.request_params(
-			'name', 'description', 'price', 'discounted_price', 'image', 'image2', 'thumbnail', 'display', 'sold', 'category_id')
+		name, description, price, discounted_price, image, image2, \
+			thumbnail, display, sold, category_id, attribute_tems = self.request_params(
+				'name', 'description', 'price', 'discounted_price', 'image', 'image2',
+				'thumbnail', 'display', 'sold', 'category_id', 'attributeItems'
+			)
 
 		product = self.product_repo.new_product(
 			name, description, price, discounted_price, image, image2, thumbnail, display, sold, category_id
 		).serialize()
+
+		attribute_items = []
+		for id in attribute_tems:
+			attribute = self.product_attributes_repo.new_product_attribute(product_id=product.id, attribute_value_id=id)
+			attribute_items.append(attribute)
+		product['attribute_items'] = attribute_items.serialize()
 		return self.handle_response('OK', payload={'product': product}, status_code=201)
 
 	def update_product(self, product_id):
-		name, description, price, discounted_price, image, image2, thumbnail, display, sold, category_id = self.request_params(
-			'name', 'description', 'price', 'discounted_price', 'image', 'image2', 'thumbnail', 'display', 'sold',
-			'category_id')
+		name, description, price, discounted_price, image, image2, thumbnail, display, sold, \
+			category_id = self.request_params(
+				'name', 'description', 'price', 'discounted_price', 'image', 'image2', 'thumbnail', 'display', 'sold',
+				'category_id')
 		product = self.product_repo.get(product_id)
 		if product:
 			updates = {}
@@ -78,6 +90,12 @@ class ProductController(BaseController):
 
 		return self.handle_response('Invalid or incorrect product_id provided', status_code=400)
 
+	def update_product_attributes(self, product_id):
+		pass
+
+	def delete_product_attributes(self, product_id):
+		pass
+
 	def suspend_product(self, product_id):
 		product = self.product_repo.get(product_id)
 		if product:
@@ -102,13 +120,12 @@ class ProductController(BaseController):
 			if product.is_deleted:
 				return self.handle_response('product has already been deleted', status_code=400)
 
-			#if any(not dependent.is_deleted for dependent in (product.engagements or product.ratings)):
+			# if any(not dependent.is_deleted for dependent in (product.engagements or product.ratings)):
 			#	return self.handle_response('product cannot be deleted because it has a child object', status_code=400)
 			updates = {}
 			updates['is_deleted'] = True
 
 			self.product_repo.update(product, **updates)
-
 
 			return self.handle_response('product deleted', payload={"status": "success"})
 		return self.handle_response('Invalid or incorrect product_id provided', status_code=400)

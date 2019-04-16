@@ -13,7 +13,6 @@ class UserController(BaseController):
     def __init__(self, request):
         '''
         Constructor.
-
         Parameters:
         -----------
             request
@@ -27,12 +26,10 @@ class UserController(BaseController):
     def list_admin_users(self, admin_role_id: int = 1) -> list:
         '''
         List admin users.
-
         Parameters:
         -----------
         admin_role_id {int}
             Admin role ID (default: {1}).
-
         Returns:
         --------
         list

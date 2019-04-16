@@ -1,4 +1,4 @@
-"""module of attribute model class"""
+"""module of User model class"""
 from .base_model import BaseModel, db
 from flask_bcrypt import Bcrypt
 import jwt

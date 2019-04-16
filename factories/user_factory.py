@@ -28,4 +28,3 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
 
     department_id = factory.SelfAttribute('department.id')
 
-
