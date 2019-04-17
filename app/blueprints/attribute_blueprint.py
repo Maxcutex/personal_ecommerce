@@ -23,23 +23,17 @@ def get_attribute(attribute_id):
 	return attribute_controller.get_attribute(attribute_id)
 
 
-@attribute_blueprint.route('', methods=['POST'])
-@Security.validator(['attributeName|required:string'])
-@Auth.has_permission('create_attribute')
-@swag_from('documentation/create_single_attribute.yml')
-def create_attribute():
-	return attribute_controller.create_attribute()
+@attribute_blueprint.route('/values/<int:attribute_id>', methods=['GET'])
+@Auth.has_permission('view_attribute')
+@swag_from('documentation/get_attribute_values.yml')
+def get_attribute_values(attribute_id):
+	return attribute_controller.get_attribute_values(attribute_id)
 
 
-@attribute_blueprint.route('/<int:attribute_id>', methods=['PATCH', 'PUT'])
-@Auth.has_permission('update_attribute')
-@swag_from('documentation/update_single_attribute.yml')
-def update_attribute(attribute_id):
-	return attribute_controller.update_attribute(attribute_id)
+@attribute_blueprint.route('/inProduct/<int:product_id>', methods=['GET'])
+@Auth.has_permission('view_attribute')
+@swag_from('documentation/get_attribute_in_product.yml')
+def get_attributes_in_product(product_id):
+	return attribute_controller.get_attribute_product(product_id)
 
 
-@attribute_blueprint.route('/<int:attribute_id>', methods=['DELETE'])
-@Auth.has_permission('delete_attribute')
-@swag_from('documentation/delete_single_attribute.yml')
-def delete_attribute(attribute_id):
-	return attribute_controller.delete_attribute(attribute_id)
