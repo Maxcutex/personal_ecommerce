@@ -3,6 +3,7 @@ from .base_model import BaseModel, db
 class Review(BaseModel):
 	__tablename__ = 'review'
 
+	review_id = db.Column(db.Integer(), primary_key=True)
 	customer_id = db.Column(db.Integer(), db.ForeignKey('users.id'), default=1)
 	customer = db.relationship('User', lazy=False)
 	product_id = db.Column(db.Integer(), db.ForeignKey('products.id'), default=1)

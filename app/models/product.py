@@ -6,6 +6,7 @@ class Product(BaseModel):
     """Product Model class"""
     __tablename__ = 'products'
 
+    product_id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     price = db.Column(db.Float(), nullable=False)

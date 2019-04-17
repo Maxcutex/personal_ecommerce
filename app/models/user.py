@@ -8,6 +8,7 @@ class User(BaseModel):
 	"""User Model class"""
 	__tablename__ = 'users'
 
+	customer_id = db.Column(db.Integer(), primary_key=True)
 	first_name = db.Column(db.String(100))
 	last_name = db.Column(db.String(100))
 	email = db.Column(db.String(100), unique=True)
@@ -18,12 +19,12 @@ class User(BaseModel):
 	credit_card = db.Column(db.Text(), nullable=True)
 	postal_code = db.Column(db.String(100), nullable=True)
 	country = db.Column(db.String(100), nullable=True)
-	shipping_region_id = db.Column(db.Integer, db.ForeignKey('shipping_region.id'), default=1)
+	shipping_region_id = db.Column(db.Integer, db.ForeignKey('shipping_region.shipping_region_id'), default=1)
 	day_phone = db.Column(db.String(100), nullable=True)
 	eve_phone = db.Column(db.String(100), nullable=True)
 	mob_phone = db.Column(db.String(100), nullable=True)
 	password_hash = db.Column(db.String(128))
-	department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
+	department_id = db.Column(db.Integer, db.ForeignKey('departments.department_id'), nullable=True)
 	is_admin = db.Column(db.Boolean, default=False)
 
 	department = db.relationship('Department', lazy=False)
