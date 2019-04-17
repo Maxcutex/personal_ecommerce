@@ -6,7 +6,7 @@ class Department(BaseModel):
     """Department Model class"""
     __tablename__ = 'departments'
 
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(1000))
 
     def __str__(self):

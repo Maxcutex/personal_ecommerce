@@ -6,6 +6,7 @@ from unittest.mock import patch
 from app.controllers.attribute_controller import AttributeController
 from app.models import Attribute
 from app.repositories.attribute_repo import AttributeRepo
+from app.repositories.product_attribute_repo import ProductAttributeRepo
 from tests.base_test_case import BaseTestCase
 
 
@@ -302,7 +303,7 @@ class TestAttributeController(BaseTestCase):
                 ' provided'
 
     @patch.object(ProductAttributeRepo, 'get')
-    def test_get_attributes_of_a_product_by_id(self):
+    def test_get_attributes_of_a_product_by_id(self, mock_get):
         pass
 
     @patch.object(AttributeRepo, 'get')

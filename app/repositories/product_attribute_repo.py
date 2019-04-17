@@ -1,7 +1,6 @@
 from app.repositories.base_repo import BaseRepo
 from app.models.product_attribute import ProductAttribute
 
-
 class ProductAttributeRepo(BaseRepo):
 	
 	def __init__(self):
@@ -13,5 +12,3 @@ class ProductAttributeRepo(BaseRepo):
 		)
 		product_attribute.save()
 		return product_attribute
-
-

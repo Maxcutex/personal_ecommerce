@@ -6,6 +6,6 @@ class AttributeValue(BaseModel):
     """Attribute Value Model class"""
     __tablename__ = 'attribute_values'
 
-    value = db.Column(db.String(100))
+    value = db.Column(db.String(100), nullable=False)
     attribute_id = db.Column(db.Integer(), db.ForeignKey('attributes.id'), default=1)
     attribute = db.relationship('Attribute', lazy=False)

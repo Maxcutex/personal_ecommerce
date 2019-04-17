@@ -233,7 +233,7 @@ class TestProductController(BaseTestCase):
 			self.fake.pydecimal(left_digits=2, right_digits=2, positive=True),
 			self.fake.pydecimal(left_digits=2, right_digits=2, positive=True),
 			self.fake.name(), self.fake.name(), self.fake.name(),
-			20, 3, 1
+			20, 3, 1, [2,3]
 		)
 		mock_new_product.return_value = self.mock_product
 		product_controller = ProductController(self.request_context)

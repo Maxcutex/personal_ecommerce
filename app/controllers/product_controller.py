@@ -51,11 +51,11 @@ class ProductController(BaseController):
 			name, description, price, discounted_price, image, image2, thumbnail, display, sold, category_id
 		).serialize()
 
-		attribute_items = []
-		for id in attribute_tems:
-			attribute = self.product_attributes_repo.new_product_attribute(product_id=product.id, attribute_value_id=id)
-			attribute_items.append(attribute)
-		product['attribute_items'] = attribute_items.serialize()
+		# attribute_items = []
+		# for id in attribute_tems:
+		# 	attribute = self.product_attributes_repo.new_product_attribute(product_id=product.id, attribute_value_id=id)
+		# 	attribute_items.append(attribute)
+		# product['attribute_items'] = attribute_items.serialize()
 		return self.handle_response('OK', payload={'product': product}, status_code=201)
 
 	def update_product(self, product_id):
