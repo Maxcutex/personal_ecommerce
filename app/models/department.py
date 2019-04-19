@@ -11,4 +11,4 @@ class Department(BaseModel):
     description = db.Column(db.String(1000))
 
     def __str__(self):
-        return self.name
+        return '<Department: {}>'.format(self.name)

@@ -21,4 +21,4 @@ class Product(BaseModel):
     ratings = db.relationship('ProductRating', lazy=True)
 
     def __str__(self):
-        return self.name
+        return '<Product: {}>'.format(self.name)

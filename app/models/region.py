@@ -6,7 +6,8 @@ class Region(BaseModel):
     """region Model class"""
     __tablename__ = 'regions'
 
+    region_id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
 
     def __str__(self):
-        return self.name
+        return '<Region: {}>'.format(self.name)

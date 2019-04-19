@@ -10,4 +10,4 @@ class Attribute(BaseModel):
     name = db.Column(db.String(100), nullable=False)
 
     def __str__(self):
-        return self.name
+        return '<Attribute: {}>'.format(self.name)

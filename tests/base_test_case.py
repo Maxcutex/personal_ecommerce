@@ -3,18 +3,21 @@ import json
 from app import create_app
 from app.utils import db
 from app.utils.auth import Auth
+import jwt
 from flask_testing import TestCase
 from flask import current_app
 
 from flask_testing import TestCase
 from faker import Faker
 
-config_name = 'development'
+config_name = 'testing'
 environ['APP_ENV'] = config_name
 fake = Faker()
 
 
 class BaseTestCase(TestCase):
+
+	TOKEN = None
 	
 	def BaseSetUp(self):
 		"""Define test variables and initialize app"""
@@ -25,11 +28,14 @@ class BaseTestCase(TestCase):
 		
 	@staticmethod
 	def get_valid_token():
-		return 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJpZCI6Ii1MLWtkRHpwZDRlYk1FWEFFYzdIIiwiZmlyc3RfbmFtZSI6IlZpY3RvciIsImxhc3RfbmFtZSI6IkFkdWt3dSIsImZpcnN0TmFtZSI6IlZpY3RvciIsImxhc3ROYW1lIjoiQWR1a3d1IiwiZW1haWwiOiJ2aWN0b3IuYWR1a3d1QGFuZGVsYS5jb20iLCJuYW1lIjoiVmljdG9yIEFkdWt3dSIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vLTVfdXlaM0paT09vL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUFjL0lUUjZOcGFWbHJnL3Bob3RvLmpwZz9zej01MCIsInJvbGVzIjp7IkZlbGxvdyI6Ii1LWEd5MUVCMW9pbWpRZ0ZpbTZDIiwiQW5kZWxhbiI6Ii1LaWloZlpvc2VRZXFDNmJXVGF1In19LCJpYXQiOjE1MzU0OTI4NTksImV4cCI6MTUzODA4NDg1OSwiYXVkIjoiYW5kZWxhLmNvbSIsImlzcyI6ImFjY291bnRzLmFuZGVsYS5jb20ifQ.MWCWnHrAM8V6kxbMClwcrFvaIUP6kuCGLS1GuQqu_aYgkJEN84C0vfAQQwzVyJLQ9TennD2k8ECRyX41RuPli8ucjMCMsI2neACJOIb2xoWwlpIExzUWMsfLkPawPki-utkQEqrcLa4vt3cR4_QQC6HZvnLa7O8g9wa52DnopPw'
+		if not BaseTestCase.TOKEN:
+			BaseTestCase.TOKEN = BaseTestCase.generate_token()
+		return BaseTestCase.TOKEN
 
 	@staticmethod
 	def user_id():
 		return Auth.decode_token(BaseTestCase.get_valid_token())['UserInfo']['id']
+
 	@staticmethod
 	def get_invalid_token():
 		return 'some.invalid.token'
@@ -117,4 +123,42 @@ class BaseTestCase(TestCase):
 			assert True
 		else:
 			assert False
+
+	@staticmethod
+	def generate_token(exp=None):
+		"""
+        Generates jwt tokens for testing purpose
+
+        params:
+            exp: Token Expiration. This could be datetime object or an integer
+        result:
+            token: This is the bearer token in this format 'Bearer token'
+        """
+
+		secret_key = getenv('JWT_SECRET_KEY_TEST')
+
+		user_info = {
+			"customerId": fake.random_digit_not_null(),
+			"name": fake.name(),
+			"email": fake.email(),
+			"address1": fake.address(),
+			"address2": fake.address(),
+			"city": fake.city(),
+			"region": fake.word(),
+			"postalCode": fake.postalcode(),
+			"country": fake.country(),
+			"shippingRegionId": fake.random_number(),
+			"dayPhone": fake.phone_number(),
+			"evePhone": fake.phone_number(),
+			"mobPhone": fake.phone_number()
+  		}
+		print('user', user_info)
+
+		payload = {
+			'UserInfo': user_info,
+		}
+		payload.__setitem__('exp', exp) if exp is not None else ''
+
+		token = jwt.encode(payload, secret_key, algorithm='RS256').decode('utf-8')
+		return token
 

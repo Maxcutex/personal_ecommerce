@@ -15,4 +15,4 @@ class ShoppingCart(BaseModel):
     added_on = db.Column(db.DateTime(), nullable=False)
 
     def __str__(self):
-        return self.name
+        return '<ShoppingCart: {}>'.format(self.name)

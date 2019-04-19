@@ -1,9 +1,7 @@
-import pdb
-
 from app.controllers.base_controller import BaseController
-from app.repositories import UserRoleRepo, RoleRepo, UserRepo
-from app.models import Role, User
-
+from app.repositories import UserRoleRepo, RoleRepo, CustomerRepo
+from app.models import Role, Customer
+from app.utils.auth import Auth
 
 class UserController(BaseController):
     '''
@@ -21,7 +19,7 @@ class UserController(BaseController):
         BaseController.__init__(self, request)
         self.user_role_repo = UserRoleRepo()
         self.role_repo = RoleRepo()
-        self.user_repo = UserRepo()
+        self.customer_repo = CustomerRepo()
 
     def list_admin_users(self, admin_role_id: int = 1) -> list:
         '''
@@ -47,7 +45,7 @@ class UserController(BaseController):
 
             associated_roles = [user_role.role_id for user_role in
                                 self.user_role_repo.filter_by(user_id=user_role.user_id).items]
-            user_objects = User.query.filter(User.id.in_(associated_roles)).all()
+            user_objects = Customer.query.filter(Customer.id.in_(associated_roles)).all()
             users = [{'id': user.id, 'first_name': user.first_name} for user in user_objects]
 
             admin_users_list.append(users)
@@ -63,7 +61,7 @@ class UserController(BaseController):
         pg = int(params.get('page', 1))
         pp = int(params.get('per_page', 10))
 
-        users = self.user_repo.paginate(error_out=False, page=pg, per_page=pp)
+        users = self.customer_repo.paginate(error_out=False, page=pg, per_page=pp)
         if users.items:
             user_list = [user.serialize() for user in users.items]
             for user in user_list:
@@ -76,7 +74,7 @@ class UserController(BaseController):
         return self.handle_response('No users found', status_code=404)
 
     def delete_user(self, id):
-        user = self.user_repo.get(id)
+        user = self.customer_repo.get(id)
         if user:
             if user.is_deleted:
                 return self.handle_response('User has already been deleted', status_code=400)
@@ -84,34 +82,34 @@ class UserController(BaseController):
             updates = {}
             updates['is_deleted'] = True
 
-            self.user_repo.update(user, **updates)
+            self.customer_repo.update(user, **updates)
 
             return self.handle_response('User deleted', payload={"status": "success"})
         return self.handle_response('Invalid or incorrect id provided', status_code=404)
 
     def create_user(self):
-        user_info = self.request_params('email', 'firstName', 'lastName', 'password', 'is_admin')
 
-        email, first_name, last_name, password, is_admin = user_info
-        if self.user_repo.find_first(email=email) is not None:
-            return self.handle_response(
-                f"User with email '{email}' already exists",
-                status_code=400
-            )
+        user_info = self.request_params_dict(
+            'email', 'name', 'password', 'address1', 'address2', 'city','region', 'postalCode',
+            'country', 'shippingRegionId', 'dayPhone', 'evePhone', 'mobPhone')
 
-        user = self.user_repo.new_user(*user_info)
+        user = self.customer_repo.new_user(**user_info)
+        token = Auth.generate_token(user.serialize(exclude=('timestamps','is_deleted')))
+        serialized_user_data = user.serialize()
 
-        return self.handle_response('OK', payload={'user': user.serialize()}, status_code=201)
+        serialized_user_data.__setitem__('token', token)
+
+        return self.handle_response('OK', payload={'user': serialized_user_data}, status_code=201)
 
     def list_user(self, email):
 
-        user = self.user_repo.find_first(email=email)
+        user = self.customer_repo.find_first(email=email)
         if user:
             return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)
         return self.handle_response('User not found', status_code=404)
 
     def update_user(self, email):
-        user = self.user_repo.get(email)
+        user = self.customer_repo.get(email)
 
         if not user:
             return self.handle_response(
@@ -127,6 +125,6 @@ class UserController(BaseController):
 
         user_info = self.request_params_dict('email', 'firstName', 'lastName', 'id')
 
-        user = self.user_repo.update(user, **user_info)
+        user = self.customer_repo.update(user, **user_info)
 
         return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)

@@ -13,4 +13,4 @@ class Shipping(BaseModel):
     shipping_region = db.relationship('ShippingRegion', lazy=False)
 
     def __str__(self):
-        return self.name
+        return '<Shipping: {}>'.format(self.name)
