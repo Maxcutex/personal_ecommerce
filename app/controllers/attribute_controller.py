@@ -64,10 +64,6 @@ class AttributeController(BaseController):
 
 			return self.handle_response('OK', payload={product_array})
 
-			if attribute.is_deleted:
-				return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
-			attribute = attribute.serialize()
-			return self.handle_response('OK', payload={'attribute': attribute})
 		else:
 			return self.handle_response('Bad Request. This attributes for this product does not exist', status_code=400)
 
