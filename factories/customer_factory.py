@@ -1,19 +1,17 @@
 import factory
 from app.utils import db
-from app.models.user import User
+from app.models.customer import Customer
 from factories.department_factory import DepartmentFactory
 
 
 class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
-        model = User
+        model = Customer
         sqlalchemy_session = db.session
 
-    id = factory.Sequence(lambda n: n)
-    first_name = 'Test'
-    last_name = 'Surname'
+    customer_id = factory.Sequence(lambda n: n)
+    name = 'Surname'
     email = factory.Faker('email')
-    department = factory.SubFactory(DepartmentFactory)
     address_1 = factory.Faker('address')
     address_2 = factory.Faker('address')
     city = factory.Faker('city')
@@ -25,6 +23,4 @@ class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
     eve_phone = '555-10101021'
     mob_phone = '555-10101031'
     password_hash = factory.Faker('password')
-
-    department_id = factory.SelfAttribute('department.id')
 

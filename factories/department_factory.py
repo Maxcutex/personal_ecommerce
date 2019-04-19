@@ -8,7 +8,7 @@ class DepartmentFactory(factory.alchemy.SQLAlchemyModelFactory):
 		model = Department
 		sqlalchemy_session = db.session
 
-	id = factory.Sequence(lambda n: n)
+	department_id = factory.Sequence(lambda n: n)
 	name = factory.Faker('word')
 	description = 'A Help Message'
 

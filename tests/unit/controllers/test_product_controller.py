@@ -17,7 +17,7 @@ class TestProductController(BaseTestCase):
 		self.fake = Faker()
 
 		self.mock_rating = ProductRating(
-			id=1,
+			product_rating_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
 			product_id=1,
@@ -26,7 +26,7 @@ class TestProductController(BaseTestCase):
 			channel='web'
 		)
 		self.mock_product_with_dependants = Product(
-			id=1,
+			product_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
 			is_deleted=False,
@@ -40,7 +40,7 @@ class TestProductController(BaseTestCase):
 			ratings=[self.mock_rating, ],
 		)
 		self.mock_product = Product(
-			id=1,
+			product_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
 			is_deleted=False,
@@ -53,7 +53,7 @@ class TestProductController(BaseTestCase):
 			is_active=True
 		)
 		self.mock_deleted_product = Product(
-			id=1,
+			product_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
 			is_deleted=True,

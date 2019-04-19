@@ -1,8 +1,10 @@
-import jwt
 from functools import wraps
+from datetime import datetime, timedelta
 from flask import request, jsonify, make_response
-# from app.repositories.permission_repo import PermissionRepo
-# from app.repositories.user_role_repo import UserRoleRepo
+from os import getenv
+from base64 import b64decode
+
+import jwt
 
 class Auth:
 	''' This class will house Authentication and Authorization Methods '''
@@ -17,6 +19,32 @@ class Auth:
 		'/',
 		'/docs'
 	]
+
+	@staticmethod
+	def generate_token(user_info, exp=24):
+		"""
+		Generates jwt tokens for testing purpose
+
+		params:
+			exp: Token Expiration. This could be datetime object or an integer
+		result:
+			token: This is the bearer token in this format 'Bearer token'
+		"""
+
+		decode_secret_key = lambda key_64: b64decode(key_64).decode('utf-8')
+
+		secret_key = decode_secret_key(getenv('JWT_SECRET_KEY'))
+
+		issue_date = datetime.now()
+
+		payload = {
+			'UserInfo': user_info,
+			'iat': issue_date,
+			'exp': issue_date + timedelta(hours=exp)
+		}
+
+		token = jwt.encode(payload, secret_key, algorithm='RS256').decode('utf-8')
+		return token
 	
 	@staticmethod
 	def check_token():
@@ -87,14 +115,50 @@ class Auth:
 		raise Exception('Internal Application Error')
 	
 	@staticmethod
-	def decode_token(token, jwtsecret=''):
+	def decode_token(token):
+
+		public_key = Auth._get_jwt_public_key()
+
 		try:
-			decoded = jwt.decode(token, jwtsecret, verify=False)
+			decoded = jwt.decode(
+				token,
+				public_key,
+				algorithms=['RS256'],
+				options={
+					'verify_signature': True,
+					'verify_exp': True
+				})
 			return decoded
 		except jwt.ExpiredSignature:
 			raise Exception('Token is Expired')
 		except jwt.DecodeError:
 			raise Exception('Error Decoding')
+
+	@staticmethod
+	def _get_jwt_public_key():
+		decode_public_key = lambda key_64: b64decode(key_64).decode('utf-8')
+
+		jwt_env_mapper = {
+			'testing': 'JWT_PUBLIC_KEY_TEST',
+			'production': 'JWT_PUBLIC_KEY',
+			'development': 'JWT_PUBLIC_KEY',
+			'staging': 'JWT_PUBLIC_KEY'
+		}
+
+		public_key_mapper = {
+			'testing': lambda key: key,
+			'development': decode_public_key,
+			'production': decode_public_key,
+			'staging': decode_public_key,
+		}
+
+		app_env = getenv('APP_ENV', 'production')
+
+		public_key_64 = getenv(jwt_env_mapper.get(app_env, 'JWT_PUBLIC_KEY'))
+
+		public_key = public_key_mapper.get(app_env, decode_public_key)(public_key_64)
+
+		return public_key
 		
 	@staticmethod
 	def check_location_header():
