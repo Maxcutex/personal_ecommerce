@@ -1,11 +1,11 @@
 from app.repositories.base_repo import BaseRepo
-from app.models.user import User
+from app.models.customer import Customer
 
 
 class UserRepo(BaseRepo):
 
     def __init__(self):
-        BaseRepo.__init__(self, User)
+        BaseRepo.__init__(self, Customer)
 
     def new_user(self, *args):
         """
@@ -19,7 +19,7 @@ class UserRepo(BaseRepo):
 
         first_name, last_name, email, password, is_admin = args
 
-        user = User(first_name=first_name, last_name=last_name,
+        user = Customer(first_name=first_name, last_name=last_name,
                     is_admin=is_admin, email=email, password=password)
         user.save()
         return user

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 9d39bf6aa2d7
+Revision ID: d098bfb25b95
 Revises: 
-Create Date: 2019-04-17 18:54:05.096038
+Create Date: 2019-04-19 16:15:57.812772
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9d39bf6aa2d7'
+revision = 'd098bfb25b95'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,26 @@ def upgrade():
     sa.Column('attribute_id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('attribute_id')
+    )
+    op.create_table('customers',
+    sa.Column('is_deleted', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('customer_id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=True),
+    sa.Column('email', sa.String(length=100), nullable=True),
+    sa.Column('address_1', sa.String(length=100), nullable=True),
+    sa.Column('address_2', sa.String(length=100), nullable=True),
+    sa.Column('city', sa.String(length=100), nullable=True),
+    sa.Column('region', sa.String(length=100), nullable=True),
+    sa.Column('postal_code', sa.String(length=100), nullable=True),
+    sa.Column('country', sa.String(length=100), nullable=True),
+    sa.Column('shipping_region_id', sa.String(length=100), nullable=True),
+    sa.Column('day_phone', sa.String(length=100), nullable=True),
+    sa.Column('eve_phone', sa.String(length=100), nullable=True),
+    sa.Column('mob_phone', sa.String(length=100), nullable=True),
+    sa.Column('password_hash', sa.String(length=128), nullable=True),
+    sa.PrimaryKeyConstraint('customer_id')
     )
     op.create_table('departments',
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
@@ -65,10 +85,10 @@ def upgrade():
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('role_id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=60), nullable=True),
     sa.Column('description', sa.String(length=200), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
+    sa.PrimaryKeyConstraint('role_id'),
     sa.UniqueConstraint('name')
     )
     op.create_table('shipping_region',
@@ -117,7 +137,7 @@ def upgrade():
     sa.Column('role_id', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('keyword', sa.String(length=100), nullable=False),
-    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
+    sa.ForeignKeyConstraint(['role_id'], ['roles.role_id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('product_ratings',
@@ -158,32 +178,16 @@ def upgrade():
     sa.ForeignKeyConstraint(['product_id'], ['products.product_id'], ),
     sa.PrimaryKeyConstraint('item_id')
     )
-    op.create_table('users',
+    op.create_table('user_roles',
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('customer_id', sa.Integer(), nullable=False),
-    sa.Column('first_name', sa.String(length=100), nullable=True),
-    sa.Column('last_name', sa.String(length=100), nullable=True),
-    sa.Column('email', sa.String(length=100), nullable=True),
-    sa.Column('address_1', sa.String(length=100), nullable=True),
-    sa.Column('address_2', sa.String(length=100), nullable=True),
-    sa.Column('city', sa.String(length=100), nullable=True),
-    sa.Column('region', sa.String(length=100), nullable=True),
-    sa.Column('credit_card', sa.Text(), nullable=True),
-    sa.Column('postal_code', sa.String(length=100), nullable=True),
-    sa.Column('country', sa.String(length=100), nullable=True),
-    sa.Column('shipping_region_id', sa.Integer(), nullable=True),
-    sa.Column('day_phone', sa.String(length=100), nullable=True),
-    sa.Column('eve_phone', sa.String(length=100), nullable=True),
-    sa.Column('mob_phone', sa.String(length=100), nullable=True),
-    sa.Column('password_hash', sa.String(length=128), nullable=True),
-    sa.Column('department_id', sa.Integer(), nullable=True),
-    sa.Column('is_admin', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['department_id'], ['departments.department_id'], ),
-    sa.ForeignKeyConstraint(['shipping_region_id'], ['shipping_region.shipping_region_id'], ),
-    sa.PrimaryKeyConstraint('customer_id'),
-    sa.UniqueConstraint('email')
+    sa.Column('role_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['role_id'], ['roles.role_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['customers.customer_id'], ),
+    sa.PrimaryKeyConstraint('role_id', 'user_id')
     )
     op.create_table('orders',
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
@@ -200,7 +204,7 @@ def upgrade():
     sa.Column('customer_id', sa.Integer(), nullable=True),
     sa.Column('shipping_id', sa.Integer(), nullable=True),
     sa.Column('tax_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['customer_id'], ['users.customer_id'], ),
+    sa.ForeignKeyConstraint(['customer_id'], ['customers.customer_id'], ),
     sa.ForeignKeyConstraint(['shipping_id'], ['shipping.shipping_id'], ),
     sa.ForeignKeyConstraint(['tax_id'], ['tax.tax_id'], ),
     sa.PrimaryKeyConstraint('order_id')
@@ -214,17 +218,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['category_id'], ['categories.category_id'], ),
     sa.ForeignKeyConstraint(['product_id'], ['products.product_id'], ),
     sa.PrimaryKeyConstraint('product_id', 'category_id')
-    )
-    op.create_table('user_roles',
-    sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('role_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.customer_id'], ),
-    sa.PrimaryKeyConstraint('role_id', 'user_id')
     )
     op.create_table('audit',
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
@@ -259,10 +252,9 @@ def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('order_details')
     op.drop_table('audit')
-    op.drop_table('user_roles')
     op.drop_table('product_categories')
     op.drop_table('orders')
-    op.drop_table('users')
+    op.drop_table('user_roles')
     op.drop_table('shopping_cart')
     op.drop_table('shipping')
     op.drop_table('product_ratings')
@@ -275,5 +267,6 @@ def downgrade():
     op.drop_table('products')
     op.drop_table('product_attributes')
     op.drop_table('departments')
+    op.drop_table('customers')
     op.drop_table('attributes')
     # ### end Alembic commands ###
