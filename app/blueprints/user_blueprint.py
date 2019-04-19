@@ -1,5 +1,5 @@
 from app.blueprints.base_blueprint import Blueprint, BaseBlueprint, request, Auth, Security
-from app.controllers.user_controller import UserController
+from app.controllers.customer_controller import UserController
 from flasgger import swag_from
 
 user_blueprint = Blueprint('user', __name__, url_prefix='{}/users'.format(BaseBlueprint.base_url_prefix))
@@ -35,14 +35,14 @@ def delete_user(id):
     return user_controller.delete_user(id)
 
 
-@user_blueprint.route('/', methods=['POST'])
-@Auth.has_permission('create_user')
+@customer_blueprint.route('/', methods=['POST'])
 @Security.validator(
-    ['email|required', 'firstName|required', 'lastName|required'])
+    ['email|required:email:ifExists_Customer_email', 'name|required', 'password|required', 'address1|optional', 'address2|optional', 'city|optional',
+     'region|optional', 'postalCode|optional', 'country|optional', 'shippingRegionId|optional',
+     'dayPhone|optional', 'evePhone|optional', 'mobPhone|optional'])
 @swag_from('documentation/create_user.yml')
 def create_user():
     return user_controller.create_user()
-
 
 
 @user_blueprint.route('/<int:user_id>', methods=['PUT'])
