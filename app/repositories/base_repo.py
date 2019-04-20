@@ -83,6 +83,10 @@ class BaseRepo:
 		return self._model.query.filter_by(**kwargs).order_by(desc(*args)) \
 			.all()
 
+	def delete(self, **kwargs):
+		""" Delete Item or items"""
+		return self._model.delete().where(**kwargs)
+
 	def exists(self, **kwargs):
 
 		if self._model.query.filter_by(**kwargs).first():
