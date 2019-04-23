@@ -11,6 +11,7 @@ from app.models.user_role import UserRole
 from tests.base_test_case import BaseTestCase
 from factories.customer_factory import UserFactory
 from app.controllers.customer_controller import facebook
+from app.controllers.customer_controller import id_token
 
 class TestUserController(BaseTestCase):
     '''
@@ -165,3 +166,54 @@ class TestUserController(BaseTestCase):
             assert result.get_json()['msg'] == 'error'
             self.assertEqual(
                 result.get_json()['payload']['accessToken'], 'this account does not have an email address set.')
+
+    @patch.object(id_token, 'verify_oauth2_token')
+    @patch.object(UserController, 'request_params_dict')
+    def test_login_google_succeeds(self, mock_request_params, mock_id_token):
+        with self.app.app_context():
+            test_user = {
+                'email': "email@email.com",
+                'name': "Eno",
+            }
+
+            mock_request_params.return_value = {
+                'access_token': 'hjgsdbkjbasjdbnhjghjabhgfdyuerjhbfhjgfdjhbfd',
+            }
+
+            mock_id_token.return_value = test_user
+
+            user_controller = UserController(self.request_context)
+
+            # Act
+            result = user_controller.google_login()
+
+            # Assert
+            assert result.status_code == 201
+            assert result.get_json()['msg'] == 'OK'
+            self.assertEqual(result.get_json()['payload']['user']['email'], test_user.get('email'))
+            self.assertEqual(result.get_json()['payload']['user']['name'], test_user.get('name'))
+
+    @patch.object(id_token, 'verify_oauth2_token')
+    @patch.object(UserController, 'request_params_dict')
+    def test_login_google_with_invalid_token_fails(self, mock_request_params, mock_id_token):
+        with self.app.app_context():
+            test_user = {
+                'email': "email@email.com",
+                'name': "Eno",
+            }
+
+            mock_request_params.return_value = {
+                'access_token': 'hjgsdbkjbasjdbnhjghjabhgfdyuerjhbfhjgfdjhbfd',
+            }
+
+            mock_id_token.side_effect = ValueError()
+
+            user_controller = UserController(self.request_context)
+
+            # Act
+            result = user_controller.google_login()
+
+            # Assert
+            assert result.status_code == 400
+            assert result.get_json()['msg'] == 'error'
+            self.assertEqual(result.get_json()['payload']['accessToken'], 'invalid or expired token supplied.')

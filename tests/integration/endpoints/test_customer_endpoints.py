@@ -2,6 +2,7 @@ from unittest.mock import patch
 from tests.base_test_case import BaseTestCase
 from factories import UserFactory
 from app.controllers.customer_controller import facebook
+from app.controllers.customer_controller import id_token
 
 
 class TestCustomerEndpoints(BaseTestCase):
@@ -73,9 +74,28 @@ class TestCustomerEndpoints(BaseTestCase):
 
         mock_fb_request.return_value = user_info
 
-
-
         response = self.client().post(self.make_url("/customers/facebook"), headers=self.headers(),
+                                      data=self.encode_to_json_string(post_data))
+
+        response_json = self.decode_from_json_string(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json['msg'], 'OK')
+        self.assertEqual(response_json['payload']['user']['name'], user_info['name'])
+        self.assertEqual(response_json['payload']['user']['email'], user_info['email'])
+
+    @patch.object(id_token, 'verify_oauth2_token')
+    def test_google_login_succeeds(self, mock_fb_request):
+        user_info = {
+            'name': 'testuser',
+            'email': 'testuser@gmail.com'
+        }
+
+        post_data = dict(accessToken='gsdhsdbnmdbjksdjksd')
+
+        mock_fb_request.return_value = user_info
+
+        response = self.client().post(self.make_url("/customers/google"), headers=self.headers(),
                                       data=self.encode_to_json_string(post_data))
 
         response_json = self.decode_from_json_string(response.data.decode('utf-8'))

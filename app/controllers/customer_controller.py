@@ -138,7 +138,6 @@ class UserController(BaseController):
 
         try:
             user_profile = id_token.verify_oauth2_token(user_info.get('access_token'), google_requests.Request())
-            print('user profile', user_profile)
 
         except ValueError:
             return self.handle_response(
