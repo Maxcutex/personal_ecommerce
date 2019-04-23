@@ -46,3 +46,4 @@ termcolor==1.1.0
 text-unidecode==1.2
 Werkzeug==0.14.1
 facebook-sdk
+google-api-python-client

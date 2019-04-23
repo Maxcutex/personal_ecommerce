@@ -51,6 +51,12 @@ def facebook_login():
     return user_controller.facebook_login()
 
 
+@customer_blueprint.route('/google', methods=['POST'])
+@Security.validator(['accessToken|required'])
+def google_login():
+    return user_controller.google_login()
+
+
 @user_blueprint.route('/<int:user_id>', methods=['PUT'])
 @Auth.has_permission('update_user')
 @Security.validator(

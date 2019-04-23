@@ -2,6 +2,8 @@ from app.controllers.base_controller import BaseController
 from app.repositories import UserRoleRepo, RoleRepo, CustomerRepo
 from app.models import Role, Customer
 import facebook
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 from faker import Faker
 
 class UserController(BaseController):
@@ -124,11 +126,27 @@ class UserController(BaseController):
                 'error', payload={'accessToken': 'this account does not have an email address set.'}, status_code=400
             )
 
-        user_profile.update({'password': self.faker.password()})
-
         user = self.customer_repo.find_first(email=user_profile.get('email')) or \
-               self.customer_repo.new_user(**{'name': user_profile.get('name'), 'email': user_profile.get('email'),
+            self.customer_repo.new_user(**{'name': user_profile.get('name'), 'email': user_profile.get('email'),
                                               'password': self.faker.password()})
+
+        return self.handle_response('OK', payload={'user': user.serialize(include_token=True)}, status_code=201)
+
+    def google_login(self):
+
+        user_info = self.request_params_dict('accessToken')
+
+        try:
+            user_profile = id_token.verify_oauth2_token(user_info.get('access_token'), google_requests.Request())
+            print('user profile', user_profile)
+
+        except ValueError:
+            return self.handle_response(
+                'error', payload={'accessToken': 'invalid or expired token supplied.'}, status_code=400
+            )
+        user = self.customer_repo.find_first(email=user_profile.get('email')) or \
+            self.customer_repo.new_user(**{'name': user_profile.get('name'), 'email': user_profile.get('email'),
+                                        'password': self.faker.password()})
 
         return self.handle_response('OK', payload={'user': user.serialize(include_token=True)}, status_code=201)
 
