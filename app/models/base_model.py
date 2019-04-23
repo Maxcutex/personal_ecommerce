@@ -24,10 +24,13 @@ class BaseModel(db.Model):
 		db.session.delete(self)
 		db.session.commit()
 	
-	def serialize(self, exclude=()):
+	def serialize(self, exclude=(), include_token=False):
 		excluded_fields = list(exclude) + ['created_at', 'updated_at', 'password_hash']
 		s = {to_camel_case(column.name): getattr(self, column.name) for column in self.__table__.columns if column.name not in excluded_fields}
 		if 'timestamps' not in excluded_fields:
 			s['timestamps'] = {'createdAt': format_response_timestamp(self.created_at), 'updatedAt': format_response_timestamp(self.updated_at)}
+
+		s.__setitem__('token', self.token) if include_token else None
+
 		return s
 

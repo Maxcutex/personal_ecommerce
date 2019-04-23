@@ -16,7 +16,7 @@ class BaseBlueprint:
 		
 		from app.blueprints.home_blueprint import home_blueprint
 		from app.blueprints.attribute_blueprint import attribute_blueprint
-		from app.blueprints.user_blueprint import customer_blueprint
+		from app.blueprints.customer_blueprint import customer_blueprint
 		self.app.register_blueprint(attribute_blueprint)
 		self.app.register_blueprint(home_blueprint)
 		self.app.register_blueprint(customer_blueprint)

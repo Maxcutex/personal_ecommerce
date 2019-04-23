@@ -45,6 +45,12 @@ def create_user():
     return user_controller.create_user()
 
 
+@customer_blueprint.route('/facebook', methods=['POST'])
+@Security.validator(['accessToken|required'])
+def facebook_login():
+    return user_controller.facebook_login()
+
+
 @user_blueprint.route('/<int:user_id>', methods=['PUT'])
 @Auth.has_permission('update_user')
 @Security.validator(
