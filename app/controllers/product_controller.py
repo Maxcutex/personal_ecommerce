@@ -93,6 +93,24 @@ class ProductController(BaseController):
 	def update_product_attributes(self, product_id):
 		pass
 
+	def get_product_in_category(self, category_id):
+		pass
+
+	def get_product_in_department(self, department_id):
+		pass
+
+	def get_product_details(self, product_id):
+		pass
+
+	def get_product_locations(self, product_id):
+		pass
+
+	def post_product_reviews(self, product_id):
+		pass
+
+	def get_product_reviews(self, product_id):
+		pass
+
 	def delete_product_attributes(self, product_id):
 		pass
 
