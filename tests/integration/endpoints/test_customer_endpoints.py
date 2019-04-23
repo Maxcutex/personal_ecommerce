@@ -1,5 +1,7 @@
+from unittest.mock import patch
 from tests.base_test_case import BaseTestCase
 from factories import UserFactory
+from app.controllers.customer_controller import facebook
 
 
 class TestCustomerEndpoints(BaseTestCase):
@@ -59,4 +61,28 @@ class TestCustomerEndpoints(BaseTestCase):
         self.assertEqual(
             response_json['errors']['name'],
             "Bad Request - name is required")
+
+    @patch.object(facebook.GraphAPI, 'request')
+    def test_facebook_login_succeeds(self, mock_fb_request):
+        user_info = {
+            'name': 'testuser',
+            'email': 'testuser@gmail.com'
+        }
+
+        post_data = dict(accessToken='gsdhsdbnmdbjksdjksd')
+
+        mock_fb_request.return_value = user_info
+
+
+
+        response = self.client().post(self.make_url("/customers/facebook"), headers=self.headers(),
+                                      data=self.encode_to_json_string(post_data))
+
+        response_json = self.decode_from_json_string(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response_json['msg'], 'OK')
+        self.assertEqual(response_json['payload']['user']['name'], user_info['name'])
+        self.assertEqual(response_json['payload']['user']['email'], user_info['email'])
+
 

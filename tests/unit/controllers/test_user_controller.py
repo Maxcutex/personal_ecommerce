@@ -10,7 +10,7 @@ from app.controllers.customer_controller import UserController
 from app.models.user_role import UserRole
 from tests.base_test_case import BaseTestCase
 from factories.customer_factory import UserFactory
-
+from app.controllers.customer_controller import facebook
 
 class TestUserController(BaseTestCase):
     '''
@@ -92,3 +92,76 @@ class TestUserController(BaseTestCase):
 
             self.assertEqual(response.status_code, 404)
             self.assertEqual(response.get_json()['msg'], 'User not found')
+
+    @patch.object(facebook.GraphAPI, 'request')
+    @patch.object(UserController, 'request_params_dict')
+    def test_login_facebook_succeeds(self, mock_request_params, mock_fb_request):
+        with self.app.app_context():
+            test_user = {
+                'email': "email@email.com",
+                'name': "Eno",
+            }
+
+            mock_request_params.return_value = {
+                'access_token': 'hjgsdbkjbasjdbnhjghjabhgfdyuerjhbfhjgfdjhbfd',
+            }
+
+            mock_fb_request.return_value = test_user
+
+            user_controller = UserController(self.request_context)
+
+            # Act
+            result = user_controller.facebook_login()
+
+            # Assert
+            assert result.status_code == 201
+            assert result.get_json()['msg'] == 'OK'
+            self.assertEqual(result.get_json()['payload']['user']['email'], test_user.get('email'))
+            self.assertEqual(result.get_json()['payload']['user']['name'],  test_user.get('name'))
+
+    @patch.object(facebook, 'GraphAPI')
+    @patch.object(UserController, 'request_params_dict')
+    def test_login_facebook_raises_exception_with_invalid_access_token(self, mock_request_params, mock_fb_request):
+        with self.app.app_context():
+
+            mock_request_params.return_value = {
+                'access_token': 'hjgsdbkjbasjdbnhjghjabhgfdyuerjhbfhjgfdjhbfd',
+            }
+
+            mock_fb_request.side_effect = facebook.GraphAPIError({})
+
+            user_controller = UserController(self.request_context)
+
+            # Act
+            result = user_controller.facebook_login()
+
+            # Assert
+            assert result.status_code == 400
+            assert result.get_json()['msg'] == 'error'
+            self.assertEqual(result.get_json()['payload']['accessToken'], 'invalid token supplied.')
+
+    @patch.object(facebook.GraphAPI, 'request')
+    @patch.object(UserController, 'request_params_dict')
+    def test_login_facebook_without_email_fails(self, mock_request_params, mock_fb_request):
+        with self.app.app_context():
+            test_user = {
+                'email': None,
+                'name': "Eno",
+            }
+
+            mock_request_params.return_value = {
+                'access_token': 'hjgsdbkjbasjdbnhjghjabhgfdyuerjhbfhjgfdjhbfd',
+            }
+
+            mock_fb_request.return_value = test_user
+
+            user_controller = UserController(self.request_context)
+
+            # Act
+            result = user_controller.facebook_login()
+
+            # Assert
+            assert result.status_code == 400
+            assert result.get_json()['msg'] == 'error'
+            self.assertEqual(
+                result.get_json()['payload']['accessToken'], 'this account does not have an email address set.')
