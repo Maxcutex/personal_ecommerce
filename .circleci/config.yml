@@ -1,0 +1,82 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
+        environment:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          REDIS_DB: 0
+          FLASK_APP: run
+          FLASK_ENV: development
+          APP_ENV: testing
+          DATABASE_TEST_URL: "sqlite:///app.db"
+          JWT_SECRET_KEY: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlDV3dJQkFBS0JnUURNSUk1bXRDMFMyZGJBVFQ1eUNEOUNtRTcrSE82SCt3REVCM3lNb1ozMUw0Nld2MkJVVEY3V0VKT21HYnlsRGR1NEJNUWk5cEtkMWhjZmswWmdEZ0Y2QkhkeXZwVjRLTVdxNHZhZEI2NEZEczhjZzlzeTdrYW5QeERkSFpCa3cwWlhTOStkVFA5ZFpHQ01IRkxMc0hFLzdLTElVNHYwQ3dKL3c4Z0RrZHhYMXdJREFRQUJBb0dBTE8wZGFrMU5mbENqaXo5MDl2UUp1RVo5WEVCUjMydkhCMTMrYzVVK2hyQW8yZFRWQnJpb1JzVHZPaWQvOVhQUFgvanNraVZpcjRwbkhIUDFrVDZENUVwZURNWTNGeWlVUkhzQXhnY1NwQ2lmbEI4YzQzVHlOTU9mNitjVlk3ZFdJc0IxQWJxMlhsU2lQSHk5Rm12cm5qQU5sZk5NZ3RJL0Z0eHpZNnBsQUVFQ1FRRHEwMFVwU01CeGZWTjhtU3NsbUkvWm5MVXZFYXZWMGd5Q3NjUW11SjMzU3JMVVlqSmJpQnlzR0xnb250eTlDbU0vaTRxMVl6V2FKaTAvMGcyTHpaU1RBa0VBM29pbDZVbGJTZ2p0RU12a0x5dU0zSWdVSnArOUJIb2NqSlRHeGJGa0NHK2JpL0NyMWVzOGpJbjVLNTRDOCs3OUlDeVM3M2trSCtVYkZBbEUzWEFlTFFKQVgxOEk4dGg2V0YxM0g5NnhlR1o2M2YzWVZGS1FBSnA3dkVUb2puVmlxc0hxMlhrOFRKSitXcUw3Z0h2czJOWTBNdVhBb3lTMDYzTmY0MUN6Y2JsQUF3SkFmT3dNNXpiczdsU3djRHRsTHkydGQ2ZFVXSkpYazRuUk9RSFR5K3JYRXYxRVBueXVtZm5pRmFybW01dXFZTEdLbTJNcVlSQ0tQUFZxREFkZ0IwY0hTUUpBS2w1Wk5BdXFVbFVHN2hQK1hOdGhIV0F0ZG1ud3dERjFWVTVrRjlKS1VCY1E3cmwxYzFZUUxzMjhyTENvRXRXYXpnRWVOcDlnaWtJWS9YRlFlaDVib3c9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQ==
+          JWT_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlHZk1BMEdDU3FHU0liM0RRRUJBUVVBQTRHTkFEQ0JpUUtCZ1FETUlJNW10QzBTMmRiQVRUNXlDRDlDbUU3K0hPNkgrd0RFQjN5TW9aMzFMNDZXdjJCVVRGN1dFSk9tR2J5bERkdTRCTVFpOXBLZDFoY2ZrMFpnRGdGNkJIZHl2cFY0S01XcTR2YWRCNjRGRHM4Y2c5c3k3a2FuUHhEZEhaQmt3MFpYUzkrZFRQOWRaR0NNSEZMTHNIRS83S0xJVTR2MEN3Si93OGdEa2R4WDF3SURBUUFCCi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==
+
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      - image: circleci/postgres:9.4
+        environment:
+          POSTGRES_USER: ubuntu
+          POSTGRES_DB: circle_test
+          POSTGRES_PASSWORD: ""
+
+      - image: redis:5.0.2
+
+    working_directory: ~/ecommerce
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: run test and coverage
+          command: |
+            . venv/bin/activate
+            pytest --cov=app/ && coverage report
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+  deploy:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - checkout
+      - run:
+          name: Deploy Develop to Heroku
+          command: |
+            git config --global user.email "eno.bassey@andela.com"
+            git config --global user.name "Eno Bassey"
+            git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git develop:master
+
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
