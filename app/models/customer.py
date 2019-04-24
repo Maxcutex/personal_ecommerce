@@ -2,6 +2,7 @@
 from .base_model import BaseModel, db
 from flask_bcrypt import Bcrypt
 from werkzeug.security import generate_password_hash
+from app.utils.auth import Auth
 
 
 class Customer(BaseModel):
@@ -50,6 +51,11 @@ class Customer(BaseModel):
 		Check if hashed password matches actual password
 		"""
 		return check_password_hash(self.password_hash, password)
+
+	@property
+	def token(self):
+		return Auth.generate_token(self.serialize(exclude=('timestamps','is_deleted', 'password')))
+
 
 	def __repr__(self):
 		return '<Customer: {}>'.format(self.username)

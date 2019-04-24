@@ -1,7 +1,10 @@
 from app.controllers.base_controller import BaseController
 from app.repositories import UserRoleRepo, RoleRepo, CustomerRepo
 from app.models import Role, Customer
-from app.utils.auth import Auth
+import facebook
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+from faker import Faker
 
 class UserController(BaseController):
     '''
@@ -20,6 +23,7 @@ class UserController(BaseController):
         self.user_role_repo = UserRoleRepo()
         self.role_repo = RoleRepo()
         self.customer_repo = CustomerRepo()
+        self.faker = Faker()
 
     def list_admin_users(self, admin_role_id: int = 1) -> list:
         '''
@@ -94,12 +98,8 @@ class UserController(BaseController):
             'country', 'shippingRegionId', 'dayPhone', 'evePhone', 'mobPhone')
 
         user = self.customer_repo.new_user(**user_info)
-        token = Auth.generate_token(user.serialize(exclude=('timestamps','is_deleted')))
-        serialized_user_data = user.serialize()
 
-        serialized_user_data.__setitem__('token', token)
-
-        return self.handle_response('OK', payload={'user': serialized_user_data}, status_code=201)
+        return self.handle_response('OK', payload={'user': user.serialize(include_token=True)}, status_code=201)
 
     def list_user(self, email):
 
@@ -107,6 +107,47 @@ class UserController(BaseController):
         if user:
             return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)
         return self.handle_response('User not found', status_code=404)
+
+    def facebook_login(self):
+
+        user_info = self.request_params_dict('accessToken')
+
+        try:
+            graph = facebook.GraphAPI(access_token=user_info.get('access_token'))
+            user_profile = graph.request('/me?fields=name,email')
+
+        except facebook.GraphAPIError:
+            return self.handle_response(
+                'error', payload={'accessToken': 'invalid token supplied.'}, status_code=400
+            )
+
+        if not user_profile.get('email'):
+            return self.handle_response(
+                'error', payload={'accessToken': 'this account does not have an email address set.'}, status_code=400
+            )
+
+        user = self.customer_repo.find_first(email=user_profile.get('email')) or \
+            self.customer_repo.new_user(**{'name': user_profile.get('name'), 'email': user_profile.get('email'),
+                                              'password': self.faker.password()})
+
+        return self.handle_response('OK', payload={'user': user.serialize(include_token=True)}, status_code=201)
+
+    def google_login(self):
+
+        user_info = self.request_params_dict('accessToken')
+
+        try:
+            user_profile = id_token.verify_oauth2_token(user_info.get('access_token'), google_requests.Request())
+
+        except ValueError:
+            return self.handle_response(
+                'error', payload={'accessToken': 'invalid or expired token supplied.'}, status_code=400
+            )
+        user = self.customer_repo.find_first(email=user_profile.get('email')) or \
+            self.customer_repo.new_user(**{'name': user_profile.get('name'), 'email': user_profile.get('email'),
+                                        'password': self.faker.password()})
+
+        return self.handle_response('OK', payload={'user': user.serialize(include_token=True)}, status_code=201)
 
     def update_user(self, email):
         user = self.customer_repo.get(email)
