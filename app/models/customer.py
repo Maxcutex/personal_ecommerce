@@ -1,7 +1,7 @@
 """module of attribute model class"""
 from .base_model import BaseModel, db
 from flask_bcrypt import Bcrypt
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from app.utils.auth import Auth
 
 
@@ -25,12 +25,6 @@ class Customer(BaseModel):
 	# department_id = db.Column(db.Integer, db.ForeignKey('departments.department_id'))
 	# role_id = db.Column(db.Integer, db.ForeignKey('roles.role_id'))
 	# is_admin = db.Column(db.Boolean, default=False)
-
-	def password_is_valid(self, password):
-		"""
-		Checks the password against it's hash to validates the user's password
-		"""
-		return Bcrypt().check_password_hash(self.password, password)
 
 	@property
 	def password(self):
