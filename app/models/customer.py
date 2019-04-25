@@ -7,7 +7,7 @@ from app.utils.auth import Auth
 
 class Customer(BaseModel):
 	"""Customer Model class"""
-	__tablename__ = 'customers'
+	__tablename__ = 'customer'
 	customer_id = db.Column(db.Integer(), primary_key=True)
 	name = db.Column(db.String(100))
 	email = db.Column(db.String(100))

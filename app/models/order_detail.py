@@ -1,10 +1,10 @@
 from .base_model import BaseModel, db
 
 class OrderDetail(BaseModel):
-	__tablename__ = 'order_details'
+	__tablename__ = 'order_detail'
 
 	item_id = db.Column(db.Integer(), primary_key=True)
-	order_id = db.Column(db.Integer(), db.ForeignKey('orders.order_id'), nullable=False, default=1)
+	order_id = db.Column(db.Integer(), db.ForeignKey('order.order_id'), nullable=False, default=1)
 	order = db.relationship('Order', lazy=False)
 	product_id = db.Column(db.Integer(), nullable=False)
 	attributes = db.Column(db.String(1000), nullable=False)

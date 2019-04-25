@@ -4,7 +4,7 @@ from .base_model import BaseModel, db
 
 class Attribute(BaseModel):
     """attribute Model class"""
-    __tablename__ = 'attributes'
+    __tablename__ = 'attribute'
 
     attribute_id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100), nullable=False)

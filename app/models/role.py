@@ -6,7 +6,7 @@ class Role(BaseModel):
     Create a Role table
     """
 
-    __tablename__ = 'roles'
+    __tablename__ = 'role'
 
     role_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=True)
