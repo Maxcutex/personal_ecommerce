@@ -121,4 +121,29 @@ class TestCustomerEndpoints(BaseTestCase):
         self.assertEqual(response_json['payload']['user']['name'], user.name)
         self.assertEqual(response_json['payload']['user']['email'], user.email)
 
+    def test_update_endpoint_succeeds(self):
+        password = '123456'
+        user = UserFactory(name="test_user", email='testemail@gmail.com', password=password)
 
+        user_data = dict(name="new test user name", address1='new address')
+
+        response = self.client().patch(self.make_url("/customers/"), headers=self.headers(user),
+                                      data=self.encode_to_json_string(user_data))
+
+        response_json = self.decode_from_json_string(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json['msg'], "OK")
+        self.assertEqual(response_json['payload']['user']['name'], user_data.get('name'))
+        self.assertEqual(response_json['payload']['user']['address1'], user_data.get('address1'))
+
+    def test_update_endpoint_with_no_auth_fails(self):
+
+        user_data = dict(name="new test user name", address1='new address')
+
+        response = self.client().patch(self.make_url("/customers/"), data=self.encode_to_json_string(user_data))
+
+        response_json = self.decode_from_json_string(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_json['msg'], "Authorization Header is Expected")

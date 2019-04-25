@@ -80,11 +80,12 @@ class BaseTestCase(TestCase):
 		db.create_all()
 	
 	@staticmethod
-	def headers():
+	def headers(user=False):
+		token = BaseTestCase.generate_token(user) if user else BaseTestCase.get_valid_token()
 		return  {
 			'Content-Type': 'application/json',
 			'X-Location': '1',
-			'Authorization': 'Bearer {}'.format(BaseTestCase.get_valid_token()),
+			'Authorization': 'Bearer {}'.format(token),
 			}
 	
 	@staticmethod
@@ -125,7 +126,7 @@ class BaseTestCase(TestCase):
 			assert False
 
 	@staticmethod
-	def generate_token(exp=None):
+	def generate_token(user=False, exp=None):
 		"""
         Generates jwt tokens for testing purpose
 
@@ -152,10 +153,9 @@ class BaseTestCase(TestCase):
 			"evePhone": fake.phone_number(),
 			"mobPhone": fake.phone_number()
   		}
-		print('user', user_info)
 
 		payload = {
-			'UserInfo': user_info,
+			'UserInfo': user.serialize() if user else user_info,
 		}
 		payload.__setitem__('exp', exp) if exp is not None else ''
 

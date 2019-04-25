@@ -17,8 +17,7 @@ class ProductController(BaseController):
 	def list_products(self):
 		products = self.product_repo.filter_by_asc(
 			self.product_repo._model.name,
-			is_deleted=False,
-			is_active=True)
+			is_deleted=False)
 		products_list = [product.serialize() for product in products.items]
 		return self.handle_response('OK', payload={'products': products_list, 'meta': self.pagination_meta(products)})
 

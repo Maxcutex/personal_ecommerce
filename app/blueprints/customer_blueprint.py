@@ -69,4 +69,4 @@ def google_login():
      'postalCode|optional', 'country|optional', 'shippingRegionId|optional', 'dayPhone|optional', 'evePhone|optional',
      'mobPhone|optional'])
 def update_customer():
-    return user_controller.update_customer()
+    return customer_controller.update_customer()
