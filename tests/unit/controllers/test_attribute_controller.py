@@ -6,7 +6,7 @@ from unittest.mock import patch
 from app.controllers.attribute_controller import AttributeController
 from app.models import Attribute
 from app.repositories.attribute_repo import AttributeRepo
-from app.repositories.product_attribute_repo import ProductAttributeRepo
+from app.repositories.product_attribute_repo import ProductAttributeRepo, ProductAttribute
 from tests.base_test_case import BaseTestCase
 
 
@@ -15,13 +15,11 @@ class TestAttributeController(BaseTestCase):
     def setUp(self):
         self.BaseSetUp()
         self.mock_attribute = Attribute(
-            is_deleted=False,
             created_at=datetime.now(),
             updated_at=datetime.now(),
             name='Mock attribute item'
         )
         self.mock_deleted_attribute = Attribute(
-            is_deleted=True,
             created_at=datetime.now(),
             updated_at=datetime.now(),
             name='Mock attribute item'
@@ -103,7 +101,7 @@ class TestAttributeController(BaseTestCase):
         '''
         # Arrange
         with self.app.app_context():
-            mock_get.return_value = self.mock_deleted_attribute
+            mock_get.return_value = None
             attribute_controller = AttributeController(self.request_context)
 
             # Act
@@ -111,8 +109,7 @@ class TestAttributeController(BaseTestCase):
 
             # Assert
             assert result.status_code == 400
-            assert result.get_json()['msg'] == 'Bad Request. This attribute item' \
-                ' is deleted'
+            assert result.get_json()['msg'] == 'Bad Request. This attribute id does not exist'
 
     @patch.object(AttributeRepo, 'get')
     def test_get_attribute_ok_response(
@@ -220,7 +217,7 @@ class TestAttributeController(BaseTestCase):
         '''
         # Arrange
         with self.app.app_context():
-            mock_get.return_value = self.mock_deleted_attribute
+            mock_get.return_value = None
             mock_request_params.return_value = ('Mock')
             attribute_controller = AttributeController(self.request_context)
 
@@ -229,8 +226,7 @@ class TestAttributeController(BaseTestCase):
 
             # Assert
             assert result.status_code == 400
-            assert result.get_json()['msg'] == 'Bad Request. This attribute item ' \
-                'is deleted'
+            assert result.get_json()['msg'] == 'Invalid or incorrect attribute_id provided'
 
     @patch.object(AttributeController, 'request_params')
     @patch.object(AttributeRepo, 'get')
@@ -315,7 +311,7 @@ class TestAttributeController(BaseTestCase):
         '''
         # Arrange
         with self.app.app_context():
-            mock_get.return_value = self.mock_deleted_attribute
+            mock_get.return_value = None
             attribute_controller = AttributeController(self.request_context)
 
             # Act
@@ -323,8 +319,7 @@ class TestAttributeController(BaseTestCase):
 
             # Assert
             assert result.status_code == 400
-            assert result.get_json()['msg'] == 'Bad Request. This attribute item' \
-                ' is deleted'
+            assert result.get_json()['msg'] == 'Invalid or incorrect attribute_id provided'
 
     @patch.object(AttributeRepo, 'get')
     @patch.object(AttributeRepo, 'update')
@@ -336,8 +331,13 @@ class TestAttributeController(BaseTestCase):
         '''Test delete_attribute OK response.
         '''
         # Arrange
+        class MockAttribute:
+            def delete(self):
+                return True
+
         with self.app.app_context():
-            mock_get.return_value = self.mock_attribute
+
+            mock_get.return_value = MockAttribute()
             mock_update.return_value = self.mock_attribute
             attribute_controller = AttributeController(self.request_context)
 
