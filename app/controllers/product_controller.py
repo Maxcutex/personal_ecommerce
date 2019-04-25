@@ -16,8 +16,7 @@ class ProductController(BaseController):
 
 	def list_products(self):
 		products = self.product_repo.filter_by_asc(
-			self.product_repo._model.name,
-			is_deleted=False)
+			self.product_repo._model.name)
 		products_list = [product.serialize() for product in products.items]
 		return self.handle_response('OK', payload={'products': products_list, 'meta': self.pagination_meta(products)})
 
@@ -134,8 +133,8 @@ class ProductController(BaseController):
 	def delete_product(self, product_id):
 		product = self.product_repo.get(product_id)
 		if product:
-			if product.is_deleted:
-				return self.handle_response('product has already been deleted', status_code=400)
+			# if product.is_deleted:
+			# 	return self.handle_response('product has already been deleted', status_code=400)
 
 			# if any(not dependent.is_deleted for dependent in (product.engagements or product.ratings)):
 			#	return self.handle_response('product cannot be deleted because it has a child object', status_code=400)

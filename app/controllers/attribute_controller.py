@@ -19,7 +19,6 @@ class AttributeController(BaseController):
 		
 		attributes = self.attribute_repo.get_unpaginated_asc(
 			self.attribute_repo._model.name,
-			is_deleted=False
 		)
 		attributes_list = [attribute.serialize() for attribute in attributes]
 		return self.handle_response('OK', payload={'attributes': attributes_list})
@@ -33,12 +32,12 @@ class AttributeController(BaseController):
 	def get_attribute(self, attribute_id):
 		attribute = self.attribute_repo.get(attribute_id)
 		if attribute:
-			if attribute.is_deleted:
-				return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
+			# if attribute.is_deleted:
+			# 	return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
 			attribute = attribute.serialize()
 			return self.handle_response('OK', payload={'attribute': attribute})
-		else:
-			return self.handle_response('Bad Request. This attribute id does not exist', status_code=400)
+
+		return self.handle_response('Bad Request. This attribute id does not exist', status_code=400)
 
 	def get_attribute_values(self, attribute_id):
 		attribute_values = self.attribute_value_repo.filter_by(attribute_id=attribute_id)
@@ -84,8 +83,8 @@ class AttributeController(BaseController):
 
 		attribute = self.attribute_repo.get(attribute_id)
 		if attribute:
-			if attribute.is_deleted:
-				return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
+			# if attribute.is_deleted:
+			# 	return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
 
 			updates = {}
 			if name:
@@ -101,11 +100,15 @@ class AttributeController(BaseController):
 	def delete_attribute(self, attribute_id):
 		attribute = self.attribute_repo.get(attribute_id)
 		updates = {}
-		if attribute:
-			if attribute.is_deleted:
-				return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
-			updates['is_deleted'] = True
+		print('attr', attribute)
+		if not attribute:
+			return self.handle_response('Invalid or incorrect attribute_id provided', status_code=400)
 
-			self.attribute_repo.update(attribute, **updates)
-			return self.handle_response('OK', payload={"status": "success"})
-		return self.handle_response('Invalid or incorrect attribute_id provided', status_code=400)
+			# if attribute.is_deleted:
+			# 	return self.handle_response('Bad Request. This attribute item is deleted', status_code=400)
+			# updates['is_deleted'] = True
+
+			# self.attribute_repo.update(attribute, **updates)
+		attribute.delete()
+		return self.handle_response('OK', payload={"status": "success"})
+		# return self.handle_response('Invalid or incorrect attribute_id provided', status_code=400)

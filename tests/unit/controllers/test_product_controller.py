@@ -29,7 +29,6 @@ class TestProductController(BaseTestCase):
 			product_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
-			is_deleted=False,
 			name=self.fake.name(),
 			description=self.fake.name(),
 			price=34.5,
@@ -42,7 +41,6 @@ class TestProductController(BaseTestCase):
 			product_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
-			is_deleted=False,
 			name=self.fake.name(),
 			description=self.fake.name(),
 			price=34.5,
@@ -54,7 +52,6 @@ class TestProductController(BaseTestCase):
 			product_id=1,
 			created_at=datetime.now(),
 			updated_at=datetime.now(),
-			is_deleted=True,
 			name=self.fake.name(),
 			description=self.fake.name(),
 			price=34.5,
@@ -403,25 +400,25 @@ class TestProductController(BaseTestCase):
 			assert result.get_json()['msg'] == 'Invalid or incorrect ' \
 											   'product_id provided'
 
-	@patch('app.repositories.product_repo.ProductRepo.get')
-	def test_delete_product_when_product_is_already_deleted(
-			self,
-			mock_product_repo_get
-	):
-		'''Test delete_product when product is already deleted.
-        '''
-		# Arrange
-		with self.app.app_context():
-			mock_product_repo_get.return_value = self.mock_deleted_product
-			product_controller = ProductController(self.request_context)
-
-			# Act
-			result = product_controller.delete_product(1)
-
-			# Assert
-			assert result.status_code == 400
-			assert result.get_json()['msg'] == 'product has already ' \
-											   'been deleted'
+	# @patch('app.repositories.product_repo.ProductRepo.get')
+	# def test_delete_product_when_product_is_already_deleted(
+	# 		self,
+	# 		mock_product_repo_get
+	# ):
+	# 	'''Test delete_product when product is already deleted.
+     #    '''
+	# 	# Arrange
+	# 	with self.app.app_context():
+	# 		mock_product_repo_get.return_value = self.mock_deleted_product
+	# 		product_controller = ProductController(self.request_context)
+    #
+	# 		# Act
+	# 		result = product_controller.delete_product(1)
+    #
+	# 		# Assert
+	# 		assert result.status_code == 400
+	# 		assert result.get_json()['msg'] == 'product has already ' \
+	# 										   'been deleted'
 
 	# @patch('app.repositories.product_repo.ProductRepo.get')
 	# def test_delete_product_when_product_has_dependants(
