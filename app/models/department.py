@@ -4,7 +4,7 @@ from .base_model import BaseModel, db
 
 class Department(BaseModel):
     """Department Model class"""
-    __tablename__ = 'departments'
+    __tablename__ = 'department'
 
     department_id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100), nullable=False)

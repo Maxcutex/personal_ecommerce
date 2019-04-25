@@ -8,7 +8,7 @@ class ShoppingCart(BaseModel):
 
     item_id = db.Column(db.Integer(), primary_key=True)
     cart_id = db.Column(db.CHAR(32), nullable=False)
-    product_id = db.Column(db.Integer(), db.ForeignKey('products.product_id'), default=1)
+    product_id = db.Column(db.Integer(), db.ForeignKey('product.product_id'), default=1)
     attributes = db.Column(db.String(1000), nullable=False)
     quantity = db.Column(db.Integer(), default=1, nullable=False)
     buy_now = db.Column(db.Boolean(), nullable=False)

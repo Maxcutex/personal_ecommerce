@@ -1,7 +1,7 @@
 from .base_model import BaseModel, db
 
 class Order(BaseModel):
-	__tablename__ = 'orders'
+	__tablename__ = 'order'
 
 	order_id = db.Column(db.Integer(), primary_key=True)
 	total_amount = db.Column(db.DECIMAL(), nullable=False)
@@ -11,7 +11,7 @@ class Order(BaseModel):
 	comments = db.Column(db.String(255))
 	auth_code = db.Column(db.String(50))
 	reference = db.Column(db.String(50))
-	customer_id = db.Column(db.Integer(), db.ForeignKey('customers.customer_id'), default=1)
+	customer_id = db.Column(db.Integer(), db.ForeignKey('customer.customer_id'), default=1)
 	customer = db.relationship('Customer', lazy=False)
 	shipping_id = db.Column(db.Integer(), db.ForeignKey('shipping.shipping_id'), default=1)
 	shipping = db.relationship('Shipping', lazy=False)
