@@ -9,7 +9,7 @@ class SnakeCaseConversion:
         """
         Converts a string in PascalCase or camelCase to snake_case one
         """
-        return sub(r'(.)([A-Z])', r'\1_\2', string).lower()
+        return sub(r'(.)([A-Z0-9])', r'\1_\2', string).lower()
 
     @staticmethod
     def snake_to_camel(string):

@@ -3,7 +3,7 @@ Unit tests for the User Controller.
 '''
 from datetime import datetime
 from unittest.mock import patch
-from app.controllers.customer_controller import CustomerController
+from app.controllers.customer_controller import CustomerController, Auth
 from app.models.user_role import UserRole
 from tests.base_test_case import BaseTestCase
 from factories.customer_factory import UserFactory
@@ -260,3 +260,62 @@ class TestUserController(BaseTestCase):
             assert result.status_code == 400
             assert result.get_json()['msg'] == 'Invalid email or password'
 
+    @patch.object(Auth, 'user')
+    @patch.object(CustomerController, 'request_params_dict')
+    def test_update_user_succeeds(self, mock_request_params, mock_auth_user):
+        with self.app.app_context():
+            customer_info = {
+                'email': 'test_user@email.com',
+                'password': "gdjysduiehjds",
+                'name': 'test user'
+            }
+            update_info = {
+                'name': 'new test user name',
+                'address_1': 'new address'
+            }
+
+            UserFactory(**customer_info)
+
+            mock_request_params.return_value = update_info
+
+            mock_auth_user.return_value = customer_info.get('email')
+
+            user_controller = CustomerController(self.request_context)
+
+            # Act
+            result = user_controller.update_customer()
+
+            # Assert
+            assert result.status_code == 200
+            assert result.get_json()['msg'] == 'OK'
+            self.assertEqual(result.get_json()['payload']['user']['name'], update_info.get('name'))
+            self.assertEqual(result.get_json()['payload']['user']['address1'], update_info.get('address_1'))
+
+    @patch.object(Auth, 'user')
+    @patch.object(CustomerController, 'request_params_dict')
+    def test_update_non_existing_user_failss(self, mock_request_params, mock_auth_user):
+        with self.app.app_context():
+            customer_info = {
+                'email': 'test_user@email.com',
+                'password': "gdjysduiehjds",
+                'name': 'test user'
+            }
+            update_info = {
+                'name': 'new test user name',
+                'address_1': 'new address'
+            }
+
+            UserFactory(**customer_info)
+
+            mock_request_params.return_value = update_info
+
+            mock_auth_user.return_value = 'unexisting_user@gamil.com'
+
+            user_controller = CustomerController(self.request_context)
+
+            # Act
+            result = user_controller.update_customer()
+
+            # Assert
+            assert result.status_code == 404
+            assert result.get_json()['msg'] == 'User not found'

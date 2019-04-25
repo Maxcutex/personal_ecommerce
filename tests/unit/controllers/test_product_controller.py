@@ -36,7 +36,6 @@ class TestProductController(BaseTestCase):
 			discounted_price=23.5,
 			display=20,
 			sold=10,
-			is_active=True,
 			ratings=[self.mock_rating, ],
 		)
 		self.mock_product = Product(
@@ -50,7 +49,6 @@ class TestProductController(BaseTestCase):
 			discounted_price=23.5,
 			display=20,
 			sold=10,
-			is_active=True
 		)
 		self.mock_deleted_product = Product(
 			product_id=1,
@@ -63,7 +61,6 @@ class TestProductController(BaseTestCase):
 			discounted_price=23.5,
 			display=20,
 			sold=10,
-			is_active=True
 		)
 
 	@patch('app.repositories.product_repo.ProductRepo.filter_by')
