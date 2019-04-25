@@ -50,7 +50,7 @@ jobs:
           name: run test and coverage
           command: |
             . venv/bin/activate
-            pytest --cov=app/ && coverage report
+            pytest --cov=app/ && coverage report && coveralls
       - save_cache:
           paths:
             - ./venv
