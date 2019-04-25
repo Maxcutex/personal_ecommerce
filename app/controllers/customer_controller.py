@@ -1,6 +1,7 @@
 from app.controllers.base_controller import BaseController
 from app.repositories import UserRoleRepo, RoleRepo, CustomerRepo
 from app.models import Role, Customer
+from app.utils.auth import Auth
 import facebook
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -161,23 +162,19 @@ class CustomerController(BaseController):
 
         return self.handle_response('OK', payload={'user': user.serialize(include_token=True)}, status_code=201)
 
-    def update_user(self, email):
-        user = self.customer_repo.get(email)
+    def update_customer(self):
 
-        if not user:
-            return self.handle_response(
-                msg="FAIL",
-                payload={'user': 'User not found'}, status_code=404
-            )
+        customer_info = self.request_params_dict(
+            'name', 'address1', 'address2', 'city', 'region', 'postalCode', 'country', 'shippingRegionId',
+            'dayPhone', 'evePhone', 'mobPhone')
 
-        if user.is_deleted:
-            return self.handle_response(
-                msg="FAIL",
-                payload={'user': 'User already deleted'}, status_code=400
-            )
+        customer = self.customer_repo.find_first(
+            email=Auth.user('email')
+        )
 
-        user_info = self.request_params_dict('email', 'firstName', 'lastName', 'id')
+        if customer:
+            customer = self.customer_repo.update(customer, **customer_info)
+            return self.handle_response('OK', payload={'user': customer.serialize()}, status_code=200)
 
-        user = self.customer_repo.update(user, **user_info)
+        return self.handle_response('User not found', status_code=404)
 
-        return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)

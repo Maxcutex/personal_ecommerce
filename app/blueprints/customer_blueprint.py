@@ -63,11 +63,10 @@ def google_login():
     return customer_controller.google_login()
 
 
-@user_blueprint.route('/<int:user_id>', methods=['PUT'])
-@Auth.has_permission('update_user')
+@customer_blueprint.route('/', methods=['PATCH'])
 @Security.validator(
-    ['firstName|required', 'lastName|required',
-     'email|required', 'password|required', 'day_phone|optional', 'eve_phone|optional', 'mob_phone|optional'])
-@swag_from('documentation/update_user.yml')
-def update_user(user_id):
-    return customer_controller.update_user(user_id)
+    ['name|optional', 'address1|optional', 'address2|optional', 'city|optional', 'region|optional',
+     'postalCode|optional', 'country|optional', 'shippingRegionId|optional', 'dayPhone|optional', 'evePhone|optional',
+     'mobPhone|optional'])
+def update_customer():
+    return user_controller.update_customer()

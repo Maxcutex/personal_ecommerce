@@ -16,8 +16,8 @@ class Auth:
 	
 	''' Routes The Authentication Header Should Not Be Applied To'''
 	authentication_header_ignore = [
-		'/',
-		'/docs'
+		# to ignore specific methods on a path use 'path:method1:method2:method3 etc...
+		'/docs', 'customers/:post',
 	]
 
 	@staticmethod
@@ -49,12 +49,20 @@ class Auth:
 	@staticmethod
 	def check_token():
 		if request.method != 'OPTIONS':
-			
+
 			# if '/' in Auth.authentication_header_ignore:
 			# 	return None
-			#
+
 			for endpoint in Auth.authentication_header_ignore:
-				if request.path.find(endpoint) > -1: # If endpoint in request.path, ignore this check
+				endpoint, *methods = endpoint.split(':')
+
+				if_condition = (
+						request.path.find(endpoint) > -1) if not methods else (
+						request.path.find(endpoint) > -1 and request.method.lower() in
+						map(lambda key: key.lower(), methods)
+				)
+
+				if if_condition: # If endpoint in request.path, ignore this check
 					return None
 
 			try:
@@ -67,7 +75,7 @@ class Auth:
 				decoded = Auth.decode_token(token)
 			except Exception as e:
 				return make_response(jsonify({'msg': str(e)}), 400)
-	
+
 	@staticmethod
 	def _get_user():
 		token = None
