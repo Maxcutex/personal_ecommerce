@@ -6,7 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from faker import Faker
 
-class UserController(BaseController):
+class CustomerController(BaseController):
     '''
     User Controller.
     '''
@@ -107,6 +107,18 @@ class UserController(BaseController):
         if user:
             return self.handle_response('OK', payload={'user': user.serialize()}, status_code=200)
         return self.handle_response('User not found', status_code=404)
+
+    def login(self):
+        customer_info = self.request_params_dict('email', 'password')
+
+        customer = self.customer_repo.find_first(email=customer_info.get('email'))
+
+        customer_verified = customer.verify_password(customer_info.get('password')) if customer else False
+
+        if customer_verified:
+            return self.handle_response('OK', payload={'user': customer.serialize(include_token=True)}, status_code=200)
+
+        return self.handle_response( 'Invalid email or password', status_code=400)
 
     def facebook_login(self):
 
