@@ -1,102 +1,69 @@
-# Introduction
-Vessel is an opinionated bootstrap of files to setup an API centric Flask application.
+# E-commerce Buildup App
 
-Its aims to provide a simple set of files and configuration required for building API services using Flask.
-Vessel is strongly opinionated about how control flows across your application, but its also very extensible.
-You can install any python packages you want and/or remove the ones you do not want.
+[![Coverage Status](https://coveralls.io/repos/github/Maxcutex/personal_ecommerce/badge.svg?branch=develop)](https://coveralls.io/github/Maxcutex/personal_ecommerce?branch=develop)
+[![CircleCI](https://circleci.com/gh/Maxcutex/personal_ecommerce.svg?style=svg)](https://circleci.com/gh/Maxcutex/personal_ecommerce)
 
-## Setup
-To use Vessel, clone this repo into `project_root`, ensure your python environments are configured and activated. 
-
-Run: `$ pip install -r requirements.txt`
-
-This will pull and install all vessel dependencies into the current or active virtual environment. Copy the content of 
-`.env_sample` into `.env` and set proper environment variables.
+This is an application to build and e-commerce app. 
 
 
-## Start Server
-In the `project_root` with environment activated, 
+## Usage
+Using  Python download and install the latest version of Python 3+.
 
-Run: `$ python run.py runserver`
+The application is built with Python
 
-Open your browser and enter `http://127.0.0.1:5000/api/v1/`
-
-## vessel CLI Tool
-Vessel comes with a small CLI tool to help generate commmonly used utilities like `models`, `repositories`, `blueprints`,
- `controllers`, `tests` and `factories`
- 
- Example:
- ```
- Usage: python vessel.py
- 
- Command Line Arguments
-    make:model name eg. python vessel.py make:model user [--with_repo [_controller] ]
-	make:repo name eg. python vessel.py make:repo user
-	make:blueprint name eg. python vessel.py make:blueprint vendors [--url_prefix=vendors]
-	make:controller name eg. python vessel.py make:controller user
-	make:test name eg python vessel.py make:test test_user_repo - This command will parse paths and write to the valid paths provided
-	make:factory name eg python vessel.py make:factory role
-    show_routes eg python vessel.py show_routes
- ```
-
-## Tests
-Ofcourse there's support for testing using pytest. To create a new test suite, simply run the make:test command on the CLI. 
-
-eg. `$ python vessel.py make:test integration/endpoints/test_user_endpoints`
-
-To run tests `$ python -m pytest`
-
-## Folder and Code Structure
+To clone the respository execute the following command.
 ```
-|-- project_root
-    |-- app/
-        |-- blueprints/
-            |-- base_blueprint.py
-        |-- controllers/
-            |-- __init__.py
-            |-- base_controller.py
-        |-- models/
-            |-- __init__.py
-            |-- base_model.py
-        |-- repositories/
-            |-- __init__.py
-            |-- base_repo.py
-        |-- utils/
-            |-- __init__.py
-            |-- auth.py
-            |-- security.py
-        |-- __init__.py
-        |-- test_db.db
-    |-- config/
-        |-- __init__.py
-        |-- env.py
-    |-- factories
-        |-- __init__.py
-    |-- migrations
-    |-- tests
-        |-- integration/
-            |-- endpoints/
-                |-- __init__.py
-                |-- test_dummy_endpoints.py
-            |-- __init__.py
-        |-- unit
-            |-- repositories/
-            |-- test_auth.py
-        |-- __init__.py
-        |-- base_test_case.py
-    |-- .env_sample
-    |-- .gitignore
-    |-- LICENSE
-    |-- Procfile
-    |-- pytest.ini
-    |-- README.md
-    |-- requirements.txt
-    |-- run.py
-    |-- vessel.py
+git clone https://github.com/maxcutex/personal_ecommerce.git
 ```
-## Procfile
-For Heroku enthusiast. Delete if you'd not be deploying to Heroku.
+Navigate into the cloned project directory.
 
-## Bugs, Corrections, Feedback, Contributing
-No system is 100% I'd be happy if you can jump in and collaborate. If you find bugs or errors or see places where you can improve on,
-fork the repo, and raise a PR or shoot me an email. jcobhams[at]gmail[dot]com
+Edit the `env-sample` file with your gmail credentials and save it as `.env`
+
+Change the parameters in there to your own settings.
+
+The key ```FLASK_APP``` must be set to ```run```. The value of the`APP_ENV` between 
+
+`development` and `testing` in order to run the application `development` or `testing` 
+
+mode respectively.
+
+On the prompt execute the following 
+```
+export $(cat .env)
+```
+
+
+Execute the following code to install all the application dependencies.
+```
+python install -r requirements.txt
+```
+
+Execute the following code to migrate all data tables/object
+```
+python run.py db migrate
+```
+
+
+Execute the following at the command line
+```
+python run.py runserver
+```
+
+Browse the application in the url
+```
+http://localhost:5000
+```
+
+### Features of E-commerce App
+- View administrative functionality
+- View products
+- Make purchases
+- Add to shopping cart
+
+
+
+### Testing
+Tests can be run using
+```
+pytest
+```
