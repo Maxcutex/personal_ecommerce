@@ -105,4 +105,20 @@ class TestCustomerEndpoints(BaseTestCase):
         self.assertEqual(response_json['payload']['user']['name'], user_info['name'])
         self.assertEqual(response_json['payload']['user']['email'], user_info['email'])
 
+    def test_customer_login_succeeds(self):
+        password = '123456'
+        user = UserFactory(name="test_user", email='testemail@gmail.com', password=password)
+
+        user_data = dict(name=user.name, email=user.email, password=password)
+
+        response = self.client().post(self.make_url("/customers/login"), headers=self.headers(),
+                                      data=self.encode_to_json_string(user_data))
+
+        response_json = self.decode_from_json_string(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json['msg'], "OK")
+        self.assertEqual(response_json['payload']['user']['name'], user.name)
+        self.assertEqual(response_json['payload']['user']['email'], user.email)
+
 
