@@ -85,7 +85,7 @@ class BaseTestCase(TestCase):
 		return  {
 			'Content-Type': 'application/json',
 			'X-Location': '1',
-			'Authorization': 'Bearer {}'.format(token),
+			'USER-KEY': 'Bearer {}'.format(token),
 			}
 	
 	@staticmethod
