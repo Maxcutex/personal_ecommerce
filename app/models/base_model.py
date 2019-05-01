@@ -29,7 +29,7 @@ class BaseModel(db.Model):
 		if 'timestamps' not in excluded_fields:
 			s['timestamps'] = {'createdAt': format_response_timestamp(self.created_at), 'updatedAt': format_response_timestamp(self.updated_at)}
 
-		s.__setitem__('token', self.token) if include_token else None
+		s.__setitem__('USER-KEY', self.token) if include_token else None
 
 		return s
 

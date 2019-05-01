@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from flask import request, jsonify, make_response
 from os import getenv
 from base64 import b64decode
+from app.utils.security import Security
+import ast
 
 import jwt
 
@@ -44,7 +46,7 @@ class Auth:
 		}
 
 		token = jwt.encode(payload, secret_key, algorithm='RS256').decode('utf-8')
-		return token
+		return f'Bearer {token}'
 	
 	@staticmethod
 	def check_token():
@@ -68,8 +70,8 @@ class Auth:
 			try:
 				token = Auth.get_token()
 			except Exception as e:
-				print(e)
-				return make_response(jsonify({'msg': str(e)}),400)
+				error_msg = ast.literal_eval(str(e))
+				return make_response(jsonify({'error': error_msg}),400)
 
 			try:
 				decoded = Auth.decode_token(token)
@@ -107,16 +109,19 @@ class Auth:
 	@staticmethod
 	def get_token(request_obj=None):
 		if request_obj:
-			header = request_obj.headers.get('Authorization', None)
+			header = request_obj.headers.get('USER-KEY', None)
 		else:
-			header = request.headers.get('Authorization', None)
+			header = request.headers.get('USER-KEY', None)
 		if not header:
-			raise Exception('Authorization Header is Expected')
+			error_msg = Security.error_msg('AUT_01', 'USER-KEY', 'Authorization code is empty.', 'header')
+			raise Exception(error_msg)
 		
 		header_parts = header.split()
 		
 		if header_parts[0].lower() != 'bearer':
-			raise Exception('Authorization Header Must Start With Bearer')
+			error_msg = Security.error_msg('AUT_01', 'USER-KEY', 'Authorization Header Must Start With "Bearer "',
+										   'header')
+			raise Exception(error_msg)
 		elif len(header_parts) > 1:
 			return header_parts[1]
 		
