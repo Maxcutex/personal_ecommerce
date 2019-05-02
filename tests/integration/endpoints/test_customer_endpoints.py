@@ -38,9 +38,7 @@ class TestCustomerEndpoints(BaseTestCase):
         response_json = self.decode_from_json_string(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response_json['errors']['email'],
-            f"Bad Request - Customer with email '{user.email}' already exists.")
+        self.assertEqual(response_json['error'][0]['message'], "The email already exists.")
 
     def test_create_customer_with_invalid_data_fails(self):
 
@@ -51,17 +49,10 @@ class TestCustomerEndpoints(BaseTestCase):
 
         response_json = self.decode_from_json_string(response.data.decode('utf-8'))
 
-
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(
-            response_json['errors']['email'],
-            f"Bad Request - '{user_data.get('email')}' is not a valid email address.")
-        self.assertEqual(
-            response_json['errors']['password'],
-            "Bad Request - password is required")
-        self.assertEqual(
-            response_json['errors']['name'],
-            "Bad Request - name is required")
+        self.assertEqual(response_json['error'][0]['message'], 'The email is invalid.')
+        self.assertEqual(response_json['error'][1]['message'], 'The field(s) are/is required.')
+        self.assertEqual(response_json['error'][2]['message'], 'The field(s) are/is required.')
 
     @patch.object(facebook.GraphAPI, 'request')
     def test_facebook_login_succeeds(self, mock_fb_request):
@@ -146,4 +137,4 @@ class TestCustomerEndpoints(BaseTestCase):
         response_json = self.decode_from_json_string(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json['msg'], "Authorization Header is Expected")
+        self.assertEqual(response_json['error']['message'], "Authorization code is empty.")
