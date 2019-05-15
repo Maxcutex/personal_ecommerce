@@ -40,3 +40,13 @@ class DepartmentController(BaseController):
 
 		return self.handle_response('OK', payload={'department': department.serialize()}, status_code=201)
 
+	def delete_department(self, department_id):
+		department = self.department_repo.find_first(department_id=department_id)
+
+		if department:
+			department.delete()
+			return self.handle_response('Department successfully deleted', status_code=200)
+
+		return self.handle_response('Department not found', status_code=404)
+
+
