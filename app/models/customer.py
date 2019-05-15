@@ -51,7 +51,7 @@ class Customer(BaseModel):
 
 
 	def __repr__(self):
-		return '<Customer: {}>'.format(self.username)
+		return '<Customer: {}>'.format(self.name)
 
 
 	# Set up user_loader

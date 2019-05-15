@@ -4,7 +4,7 @@ from app.models.customer import Customer
 from factories.department_factory import DepartmentFactory
 
 
-class UserFactory(factory.alchemy.SQLAlchemyModelFactory):
+class CustomerFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = Customer
         sqlalchemy_session = db.session

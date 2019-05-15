@@ -4,7 +4,7 @@ from flask import request, jsonify, make_response
 from os import getenv
 from base64 import b64decode
 from app.utils.security import Security
-from app.repositories import RoleRepo, UserRoleRepo
+from app.repositories import RoleRepo, UserRoleRepo, PermissionRepo
 import ast
 
 import jwt
@@ -201,8 +201,8 @@ class Auth:
 			
 			@wraps(f)
 			def decorated(*args, **kwargs):
-				user_role_repo = None #UserRoleRepo()
-				permission_repo = None #PermissionRepo()
+				user_role_repo = UserRoleRepo()
+				permission_repo = PermissionRepo()
 				
 				user_id = Auth.user('id')
 				user_role = user_role_repo.find_first(**{'user_id': user_id})

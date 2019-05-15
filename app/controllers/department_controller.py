@@ -38,5 +38,5 @@ class DepartmentController(BaseController):
 
 		department = self.department_repo.new_department(**department_info)
 
-		return self.handle_response('OK', payload={'user': department.serialize()}, status_code=201)
+		return self.handle_response('OK', payload={'department': department.serialize()}, status_code=201)
 
