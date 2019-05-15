@@ -233,4 +233,3 @@ class TestAuth(BaseTestCase):
 
 		self.assertEqual(response, 'test')
 
-			
