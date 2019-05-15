@@ -50,3 +50,14 @@ class DepartmentController(BaseController):
 		return self.handle_response('Department not found', status_code=404)
 
 
+	def update_department(self, department_id):
+		department_info = self.request_params_dict('name', 'description')
+
+		department = self.department_repo.find_first(department_id=department_id)
+
+		if department:
+			department = self.department_repo.update(department, **department_info)
+			return self.handle_response('OK', payload={'department': department.serialize()}, status_code=200)
+
+		return self.handle_response('Department not found', status_code=404)
+
