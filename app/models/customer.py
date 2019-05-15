@@ -1,8 +1,6 @@
 """module of attribute model class"""
 from .base_model import BaseModel, db
-from flask_bcrypt import Bcrypt
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.utils.auth import Auth
 
 
 class Customer(BaseModel):
@@ -48,6 +46,7 @@ class Customer(BaseModel):
 
 	@property
 	def token(self):
+		from app.utils.auth import Auth
 		return Auth.generate_token(self.serialize(exclude=('timestamps','is_deleted', 'password')))
 
 

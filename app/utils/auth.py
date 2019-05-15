@@ -4,6 +4,7 @@ from flask import request, jsonify, make_response
 from os import getenv
 from base64 import b64decode
 from app.utils.security import Security
+from app.repositories import RoleRepo, UserRoleRepo
 import ast
 
 import jwt
@@ -225,5 +226,41 @@ class Auth:
 			
 			return decorated
 		return permission_checker
+
+
+	@staticmethod
+	def has_role(role):
+
+		def role_checker(f):
+
+			@wraps(f)
+			def decorated(*args, **kwargs):
+
+				user_role_repo = UserRoleRepo()
+
+				role_repo = RoleRepo()
+
+				user = Auth.user('id')
+				user_id = user.get('customerId') if user else None
+
+				user_role = user_role_repo.find_first(**{'user_id': user_id})
+
+				if not user_id:
+					return make_response(jsonify({'msg': 'Missing User ID in token'})), 400
+
+				if not user_role:
+					return make_response(jsonify({'msg': 'Access Error - No Role Granted'})), 400
+
+				if role_repo.get(user_role.role_id).name != role:
+					return make_response(
+						jsonify({'msg': 'Access Error - This role does not have the access rights'}
+								)
+					), 400
+
+				return f(*args, **kwargs)
+
+			return decorated
+
+		return role_checker
 	
 		

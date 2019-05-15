@@ -1,6 +1,3 @@
-import pdb
-
-from app import Auth
 from app.controllers.base_controller import BaseController
 from app.repositories.attribute_repo import AttributeRepo
 from app.repositories.attribute_value_repo import AttributeValueRepo

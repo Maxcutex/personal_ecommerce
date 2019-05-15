@@ -14,9 +14,11 @@ class BaseBlueprint:
 		
 		''' Register All App Blue Prints Here '''
 		
-		from app.blueprints.home_blueprint import home_blueprint
-		from app.blueprints.attribute_blueprint import attribute_blueprint
-		from app.blueprints.customer_blueprint import customer_blueprint
+		from app.blueprints import (
+			home_blueprint, attribute_blueprint, customer_blueprint, department_blueprint
+		)
+
 		self.app.register_blueprint(attribute_blueprint)
 		self.app.register_blueprint(home_blueprint)
 		self.app.register_blueprint(customer_blueprint)
+		self.app.register_blueprint(department_blueprint)
