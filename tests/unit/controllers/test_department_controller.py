@@ -61,3 +61,44 @@ class TestDepartmentController(BaseTestCase):
             # Assert
             assert result.status_code == 404
             assert result.get_json()['msg'] == 'Department not found'
+
+
+    @patch.object(DepartmentController, 'request_params_dict')
+    def test_update_department_succeeds(self, mock_request_params):
+        with self.app.app_context():
+            department = DepartmentFactory.create(name="test")
+            mock_request_params.return_value = {
+                'name': "eastern",
+                'description': "test description",
+            }
+            department_controller = DepartmentController(self.request_context)
+
+            # Act
+            result = department_controller.update_department(department.department_id)
+
+            # Assert
+            assert result.status_code == 200
+            assert result.get_json()['msg'] == 'OK'
+            self.assertEqual(
+                result.get_json()['payload']['department']['name'], "eastern"
+            )
+            self.assertEqual(
+                result.get_json()['payload']['department']['description'], "test description"
+            )
+
+    @patch.object(DepartmentController, 'request_params_dict')
+    def test_update_department_fails(self, mock_request_params):
+        with self.app.app_context():
+
+            mock_request_params.return_value = {
+                'name': "eastern",
+                'description': "test description",
+            }
+            department_controller = DepartmentController(self.request_context)
+
+            # Act
+            result = department_controller.update_department(department_id=6)
+
+            # Assert
+            assert result.status_code == 404
+            assert result.get_json()['msg'] == 'Department not found'
