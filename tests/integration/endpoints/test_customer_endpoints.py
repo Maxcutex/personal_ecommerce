@@ -38,7 +38,8 @@ class TestCustomerEndpoints(BaseTestCase):
         response_json = self.decode_from_json_string(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json['error'][0]['message'], "The email already exists.")
+        self.assertEqual(response_json['error'][0]['message'],
+                         f"Customer with the email '{user.email}' already exists.")
 
     def test_create_customer_with_invalid_data_fails(self):
 
