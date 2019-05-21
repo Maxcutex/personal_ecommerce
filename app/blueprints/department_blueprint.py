@@ -31,3 +31,10 @@ def create_department():
 @swag_from('documentation/delete_department.yml')
 def delete_department(department_id):
 	return department_controller.delete_department(department_id)
+
+@department_blueprint.route('/<int:department_id>', methods=['PATCH'])
+@Auth.has_role('admin')
+@Security.validator(['name|optional', 'description|optional'])
+@swag_from('documentation/update_department.yml')
+def update_department(department_id):
+	return department_controller.update_department(department_id)
