@@ -32,3 +32,11 @@ class DepartmentController(BaseController):
 			return self.handle_response('OK', payload={'department': department})
 		else:
 			return self.handle_response('Bad Request. This department id does not exist', status_code=400)
+
+	def create_department(self):
+		department_info = self.request_params_dict('name', 'description')
+
+		department = self.department_repo.new_department(**department_info)
+
+		return self.handle_response('OK', payload={'department': department.serialize()}, status_code=201)
+

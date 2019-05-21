@@ -6,7 +6,7 @@ from unittest.mock import patch
 from app.controllers.customer_controller import CustomerController, Auth
 from app.models.user_role import UserRole
 from tests.base_test_case import BaseTestCase
-from factories.customer_factory import UserFactory
+from factories.customer_factory import CustomerFactory
 from app.controllers.customer_controller import facebook
 from app.controllers.customer_controller import id_token
 
@@ -70,7 +70,7 @@ class TestUserController(BaseTestCase):
     def test_list_user_succeeds(self):
 
         with self.app.app_context():
-            user = UserFactory.create(email="testemail@email.com", password="Complexx@34", name='testname')
+            user = CustomerFactory.create(email="testemail@email.com", password="Complexx@34", name='testname')
 
             user_controller = CustomerController(self.request_context)
 
@@ -224,7 +224,7 @@ class TestUserController(BaseTestCase):
                 'name': 'test user'
             }
 
-            UserFactory(**login_credentials)
+            CustomerFactory(**login_credentials)
 
             mock_request_params.return_value = login_credentials
 
@@ -274,7 +274,7 @@ class TestUserController(BaseTestCase):
                 'address_1': 'new address'
             }
 
-            UserFactory(**customer_info)
+            CustomerFactory(**customer_info)
 
             mock_request_params.return_value = update_info
 
@@ -305,7 +305,7 @@ class TestUserController(BaseTestCase):
                 'address_1': 'new address'
             }
 
-            UserFactory(**customer_info)
+            CustomerFactory(**customer_info)
 
             mock_request_params.return_value = update_info
 

@@ -8,7 +8,7 @@ class RoleFactory(factory.alchemy.SQLAlchemyModelFactory):
 		model = Role
 		sqlalchemy_session = db.session
 
-	id = factory.Sequence(lambda n: n)
-	name = factory.Faker('word')
+	role_id = factory.Sequence(lambda n: n)
+	name = factory.Sequence(lambda n: n)
 	description = 'A Help Message'
 

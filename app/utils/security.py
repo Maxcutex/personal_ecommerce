@@ -83,7 +83,8 @@ class Security:
                                     errors.__setitem__(request_key, error_msg)
                             
                             if (validator == 'required' and request_key not in payload) or not payload.get(request_key):
-                                error_msg = Security.error_msg('USR_02', request_key, 'The field(s) are/is required.')
+                                error_code = 'USR_02' if request_key == 'email' else None
+                                error_msg = Security.error_msg(error_code, request_key, 'The field(s) are/is required.')
                                 errors.__setitem__(request_key, error_msg)
                             
                             if validator.find('max') > -1:
@@ -224,9 +225,11 @@ class Security:
             mod = importlib.import_module('app.repositories.{}_repo'.format(SnakeCaseConversion.camel_to_snake(model_name)))
             repo = getattr(mod, f'{model_name}Repo')()
             repo_value = repo.find_first(**{column_name: value})
-            msg = "The {} already exists.".format(key)
+            msg = f"{model_name} with the {key} '{value}' already exists."
 
-            return Security.error_msg("USR_04", key, msg) if repo_value else None
+            error_code = "USR_04" if column_name == 'email' else None
+
+            return Security.error_msg(error_code, key, msg) if repo_value else None
 
     @staticmethod
     def error_msg(error_code, key, msg, body='body', status=400):

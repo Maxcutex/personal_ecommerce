@@ -34,7 +34,7 @@ class BaseTestCase(TestCase):
 
 	@staticmethod
 	def user_id():
-		return Auth.decode_token(BaseTestCase.get_valid_token())['UserInfo']['id']
+		return Auth.decode_token(BaseTestCase.get_valid_token())['UserInfo']['customerId']
 
 	@staticmethod
 	def get_invalid_token():

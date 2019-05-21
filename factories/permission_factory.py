@@ -10,6 +10,6 @@ class PermissionFactory(factory.alchemy.SQLAlchemyModelFactory):
 		sqlalchemy_session = db.session
 
 	id = factory.Sequence(lambda n: n)
-	name = factory.Faker('name')
+	name = factory.Sequence(lambda n: n)
 	role_id = factory.SubFactory(RoleFactory)
-	keyword = factory.Faker('word')
+	keyword = factory.Sequence(lambda n: n)

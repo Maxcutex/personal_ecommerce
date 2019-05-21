@@ -1,6 +1,6 @@
 from unittest.mock import patch
 from tests.base_test_case import BaseTestCase
-from factories import UserFactory
+from factories import CustomerFactory
 from app.controllers.customer_controller import facebook
 from app.controllers.customer_controller import id_token
 
@@ -11,7 +11,7 @@ class TestCustomerEndpoints(BaseTestCase):
 
     def test_create_customer_succeeds(self):
         password = '123456'
-        user = UserFactory.build(name="test_user", email='testemail@gmail.com', password=password)
+        user = CustomerFactory.build(name="test_user", email='testemail@gmail.com', password=password)
 
 
         user_data = dict(name=user.name, email=user.email, password=password)
@@ -28,7 +28,7 @@ class TestCustomerEndpoints(BaseTestCase):
 
     def test_create_customer_with_duplicate_id_fails(self):
         password = '123456'
-        user = UserFactory.create(name="test_user", email='testemail@gmail.com', password=password)
+        user = CustomerFactory.create(name="test_user", email='testemail@gmail.com', password=password)
 
         user_data = dict(name=user.name, email=user.email, password=password)
 
@@ -38,7 +38,8 @@ class TestCustomerEndpoints(BaseTestCase):
         response_json = self.decode_from_json_string(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response_json['error'][0]['message'], "The email already exists.")
+        self.assertEqual(response_json['error'][0]['message'],
+                         f"Customer with the email '{user.email}' already exists.")
 
     def test_create_customer_with_invalid_data_fails(self):
 
@@ -98,7 +99,7 @@ class TestCustomerEndpoints(BaseTestCase):
 
     def test_customer_login_succeeds(self):
         password = '123456'
-        user = UserFactory(name="test_user", email='testemail@gmail.com', password=password)
+        user = CustomerFactory(name="test_user", email='testemail@gmail.com', password=password)
 
         user_data = dict(name=user.name, email=user.email, password=password)
 
@@ -114,7 +115,7 @@ class TestCustomerEndpoints(BaseTestCase):
 
     def test_update_endpoint_succeeds(self):
         password = '123456'
-        user = UserFactory(name="test_user", email='testemail@gmail.com', password=password)
+        user = CustomerFactory(name="test_user", email='testemail@gmail.com', password=password)
 
         user_data = dict(name="new test user name", address1='new address')
 
