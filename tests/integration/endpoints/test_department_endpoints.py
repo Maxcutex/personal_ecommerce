@@ -23,3 +23,16 @@ class TestDepartmentEndpoints(BaseTestCase):
         self.assertEqual(response_json['msg'], "OK")
         self.assertEqual(response_json['payload']['department']['name'], department.name)
         self.assertEqual(response_json['payload']['department']['description'], department.description)
+
+    def test_delete_department_succeeds(self):
+        department = DepartmentFactory()
+
+        create_user_role('admin')
+
+        response = self.client().delete(self.make_url(f"/departments/{department.department_id}"),
+                                        headers=self.headers(),)
+
+        response_json = self.decode_from_json_string(response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json['msg'], "Department successfully deleted")
+

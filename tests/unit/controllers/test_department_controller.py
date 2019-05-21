@@ -4,6 +4,7 @@ Unit tests for the Department Controller.
 from unittest.mock import patch
 from app.controllers.department_controller import DepartmentController
 from tests.base_test_case import BaseTestCase
+from factories import DepartmentFactory
 
 
 class TestDepartmentController(BaseTestCase):
@@ -35,3 +36,28 @@ class TestDepartmentController(BaseTestCase):
             self.assertEqual(
                 result.get_json()['payload']['department']['description'], "test description"
             )
+
+    def test_delete_department_succeeds(self):
+        with self.app.app_context():
+            department = DepartmentFactory.create(name="test")
+
+            department_controller = DepartmentController(self.request_context)
+
+            # Act
+            result = department_controller.delete_department(department.department_id)
+
+            # Assert
+            assert result.status_code == 200
+            assert result.get_json()['msg'] == 'Department successfully deleted'
+
+    def test_delete_department_fails(self):
+        with self.app.app_context():
+
+            department_controller = DepartmentController(self.request_context)
+
+            # Act
+            result = department_controller.delete_department(department_id=6)
+
+            # Assert
+            assert result.status_code == 404
+            assert result.get_json()['msg'] == 'Department not found'

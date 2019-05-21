@@ -25,3 +25,9 @@ def get_department(department_id):
 @swag_from('documentation/create_department.yml')
 def create_department():
 	return department_controller.create_department()
+
+@department_blueprint.route('/<int:department_id>', methods=['DELETE'])
+@Auth.has_role('admin')
+@swag_from('documentation/delete_department.yml')
+def delete_department(department_id):
+	return department_controller.delete_department(department_id)
