@@ -56,10 +56,12 @@ class BaseController:
 	def get_json(self):
 		return self.request.get_json()
 
-	def handle_response(self, msg='OK', payload=None, status_code=200, slack_response=None):
+	def handle_response(self, msg='OK', payload=None, error=None, status_code=200, slack_response=None):
 
 		# If there is no specific slack formatted response, default to WEB API Response format
-		if slack_response is None:
+		if error:
+			data = {'error': error}
+		elif slack_response is None:
 			data = {'msg': msg}
 			if payload is not None:
 				data['payload'] = payload
