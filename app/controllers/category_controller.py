@@ -11,7 +11,6 @@ class CategoryController(BaseController):
 
 	def create_category(self):
 		category_info = self.request_params_dict('name', 'description', 'departmentId')
-		print('category', category_info)
 
 		if not self.department_repo.get(category_info.get('department_id')):
 			return self.handle_response(
