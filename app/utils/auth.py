@@ -20,7 +20,7 @@ class Auth:
 	''' Routes The Authentication Header Should Not Be Applied To'''
 	authentication_header_ignore = [
 		# to ignore specific methods on a path use 'path:method1:method2:method3 etc...
-		'/docs', 'customers/:post',
+		'/docs', 'customers/:post', 'customers:post'
 	]
 
 	@staticmethod

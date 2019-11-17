@@ -3,7 +3,7 @@ from flasgger import swag_from
 from app.blueprints.base_blueprint import Blueprint, BaseBlueprint, request, Security, Auth
 from app.controllers.category_controller import CategoryController
 
-url_prefix = '{}/'.format(BaseBlueprint.base_url_prefix)
+url_prefix = '{}/categories'.format(BaseBlueprint.base_url_prefix)
 category_blueprint = Blueprint('categories', __name__, url_prefix=url_prefix)
 category_controller = CategoryController(request)
 
@@ -34,3 +34,10 @@ def get_category_department(department_id):
 @swag_from('documentation/get_category_in_product.yml')
 def get_categorys_in_product(product_id):
 	return category_controller.get_category_product(product_id)
+
+@category_blueprint.route('/', methods=['POST'])
+@Auth.has_role('admin')
+@Security.validator(['name|required:ifExists_Category_name', 'description|required', 'departmentId|required'])
+@swag_from('documentation/create_category.yml')
+def create_category():
+	return category_controller.create_category()

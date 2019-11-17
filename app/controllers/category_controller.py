@@ -1,11 +1,30 @@
 from app.controllers.base_controller import BaseController
 from app.repositories.category_repo import CategoryRepo
+from app.repositories.department_repo import DepartmentRepo
 
 
 class CategoryController(BaseController):
 	def __init__(self, request):
 		BaseController.__init__(self, request)
 		self.category_repo = CategoryRepo()
+		self.department_repo = DepartmentRepo()
+
+	def create_category(self):
+		category_info = self.request_params_dict('name', 'description', 'departmentId')
+
+		if not self.department_repo.get(category_info.get('department_id')):
+			return self.handle_response(
+										error={
+											"code": "DEP_02",
+											"message": "Department with given ID doesn't exist",
+											"field": "departmentId",
+											"status": 404},
+										status_code=404)
+
+		category = self.category_repo.new_category(**category_info)
+
+		return self.handle_response('OK', payload={'category': category.serialize()}, status_code=201)
+
 
 	def list_categories(self):
 
