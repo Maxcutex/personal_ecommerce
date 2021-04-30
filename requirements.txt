@@ -55,7 +55,7 @@ python-dotenv==0.9.1
 python-editor==1.0.3
 PyYAML==5.1
 requests==2.21.0
-rsa==4.0
+rsa==4.7
 six==1.11.0
 SQLAlchemy==1.2.13
 termcolor==1.1.0
